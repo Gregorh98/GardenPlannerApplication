@@ -25,7 +25,7 @@ class Settings:
 		for y in range(self.height):
 			gardenMap.append([])
 			for x in range(self.width):
-				gardenMap[y].append({})
+				gardenMap[y].append(Plot(x, y))
 		
 		print(gardenMap)
 		self.drawGardenMap()
@@ -40,12 +40,19 @@ class Settings:
 		
 		for y in range(self.height):
 			for x in range(self.width):
-				
+				#Define object pass parameters tile width, x, y and then add to garden map
+				#Draw on GUI as part of internal def		
 				c.create_rectangle(tileWidth+x*tileWidth, tileWidth+y*tileWidth, tileWidth+x*tileWidth+tileWidth, tileWidth+y*tileWidth+tileWidth, fill="brown")
+				
 		
 	def getDimensions(self):
 		self.width	= int(self.widthEntryBox.get())
 		self.height = int(self.heightEntryBox.get())
+
+class Plot():
+	def __init__(self, x, y):
+		self.x = x
+		self.y = y
 
 A = Settings()
 A.root.mainloop()
