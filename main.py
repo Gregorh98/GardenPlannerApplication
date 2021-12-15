@@ -35,12 +35,13 @@ class Settings:
 		
 		tileWidth = 32 #The dimensions of the representation of one square foot of land
 		
-		c = Canvas(newWindow, background="#009A17", height=(self.height*tileWidth), width=(self.width*tileWidth))
+		c = Canvas(newWindow, background="#009A17", height=((2*tileWidth)+self.height*tileWidth), width=((2*tileWidth)+self.width*tileWidth))
 		c.pack()
 		
 		for y in range(self.height):
 			for x in range(self.width):
-				c.create_rectangle(x*tileWidth, y*tileWidth, x*tileWidth+tileWidth, y*tileWidth+tileWidth, fill="brown")
+				
+				c.create_rectangle(tileWidth+x*tileWidth, tileWidth+y*tileWidth, tileWidth+x*tileWidth+tileWidth, tileWidth+y*tileWidth+tileWidth, fill="brown")
 		
 	def getDimensions(self):
 		self.width	= int(self.widthEntryBox.get())
