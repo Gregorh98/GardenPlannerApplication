@@ -27,7 +27,7 @@ class Settings:
 	def drawGardenMap(self):
 		newWindow = Toplevel(self.root)
 		
-		tileWidth = 64 #The dimensions of the representation of one square foot of land
+		tileWidth = 32 #The dimensions of the representation of one square foot of land
 		
 		c = Canvas(newWindow, background="#2c3c1e", height=((2*tileWidth)+self.height*tileWidth), width=((2*tileWidth)+self.width*tileWidth))
 		c.pack()
@@ -35,8 +35,8 @@ class Settings:
 		for y in range(self.height):
 			self.gardenMap.append([])
 			for x in range(self.width):
-				self.gardenMap[y].append(Plot(c, x, y, tileWidth))
-				c.tag_bind(self.gardenMap[y][x].canvasElement, "<Button-1>", self.gardenMap[y][x].outputName)
+				self.gardenMap[y].append(Plot(c, x, y, tileWidth, newWindow))
+				c.tag_bind(self.gardenMap[y][x].canvasElement, "<Button-1>", self.gardenMap[y][x].plotClicked)
 								
 	def getDimensions(self):
 		self.width	= int(self.widthEntryBox.get())
@@ -44,17 +44,37 @@ class Settings:
 
 
 class Plot():
-	def __init__(self, canvas, x, y, tileWidth):
+	def __init__(self, canvas, x, y, tileWidth, root):
 		self.x = x
 		self.y = y
 		self.id = str([x,y])
 		self.canvas = canvas
 		self.canvasElement = canvas.create_rectangle(tileWidth+x*tileWidth, tileWidth+y*tileWidth, tileWidth+x*tileWidth+tileWidth, tileWidth+y*tileWidth+tileWidth, fill="#52402a", outline="#482f1f")
+		self.rootWindow = root
+		self.plantedDate = None;
 		
-	def outputName(self, args):
+	def plotClicked(self, args):
+		self.displayWindow()
+		
+	def displayWindow(self):
+		self.plotWindow = Toplevel(self.rootWindow)
+		self.plotWindow.title("Edit Plot")
+		
+		availableCrops = ["Corn", ["Peas"], ["Sprouts"]]
+		
+		selected = StringVar(self.plotWindow)
+		selected.set(availableCrops[0])
+		
+		cropListbox = Listbox(self.plotWindow, height=3)
+		for x in availableCrops:
+			cropListbox.insert(END, x)
+		cropListbox.pack()
+		
 		self.canvas.itemconfig(self.canvasElement, fill="#482f1f")
-		print(self.canvas.find("all"))
 		
+class Crop():
+	def __init__():
+		self.name = name
 
 A = Settings()
 A.root.mainloop()
