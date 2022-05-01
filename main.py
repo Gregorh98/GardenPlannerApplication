@@ -196,3 +196,4 @@ class Plot():
 
 A = Main()
 A.root.mainloop()
+#temp comment so broken git will let me track the changes
