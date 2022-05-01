@@ -30,7 +30,7 @@
     "indoorSowEnd": "March",
     "harvestStart": "August",
     "harvestEnd": "September",
-    "numberPerSquareFoot": 16
+    "numberPerSquareFoot": 4
   },
   "tomato": {
     "name": "Tomatoes",
@@ -65,7 +65,7 @@
     "harvestEnd": "September",
     "numberPerSquareFoot": 4
   },
-  "springOnion": {
+  "springonion": {
     "name": "Spring Onion",
     "variety": "Ramrod",
     "outdoorSowStart": "March",
