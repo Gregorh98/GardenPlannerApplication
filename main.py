@@ -1,7 +1,9 @@
+import _tkinter
 import json
 import tkinter.messagebox
 from tkinter import *
 from PIL import ImageGrab
+from tkcalendar import DateEntry
 
 #Resources
 cWood       = "#bca464"
@@ -10,12 +12,14 @@ cLightMud   = "#52402a"
 cMidMud     = "#482f1f"
 cDarkMud    = "#2e2018"
 
+#TODO - Split this all out into different files
+
 class Main:
     def __init__(self):
         self.root = Tk()
         self.root.title("Square Foot Garden Planner")
-        self.height = 3
-        self.width = 2
+        self.height = 2
+        self.width = 3
         self.tileWidth = 64  # The dimensions of the representation of one square foot of land
         self.gardenMap = []
         self.drawGardenMap()
@@ -112,17 +116,18 @@ class Main:
         self.height = int(self.heightEntryBox.get())
 
 class Plant():
-    def __init__(self, name, id):
+    def __init__(self, name, id, plantingDate):
         self.name       = name
         self.id         = id
         self.quantity   = 1
+        self.plantingDate = plantingDate
         self.getInfo()
 
     def getInfo(self):
         with open("plants.json", "r") as f:
             allPlants = json.loads(f.read())
             myPlant = allPlants[self.name.lower()]
-            self.quantity =myPlant["numberPerSquareFoot"]
+            self.quantity = myPlant["numberPerSquareFoot"]
 
 class Plot():
     def __init__(self, x, y, root, tileWidth):
@@ -139,8 +144,9 @@ class Plot():
         self.id = str([x, y])
 
         self.rootWindow = root
+        self.plotText   = 0
 
-        self.plant       = 0
+        self.plant       = None
         self.plantedDate = None
 
     def draw(self, canvas):
@@ -164,13 +170,14 @@ class Plot():
         selected = StringVar(self.plotWindow)
         selected.set(availableCrops[0])
 
+        # Listbox Section
         listFrame = Frame(self.plotWindow)
 
         cropListbox = Listbox(listFrame, height=6)
         for x in availableCrops:
             cropListbox.insert(END, x)
         cropListbox.pack(side=LEFT, fill="y")
-        if self.plant is not 0:
+        if self.plant is not None:
             cropListbox.select_set(self.plant.id)
 
         scrollbar = Scrollbar(listFrame, orient="vertical")
@@ -181,14 +188,34 @@ class Plot():
 
         listFrame.pack()
 
-        selectCropButton = Button(self.plotWindow, text="Add Crop To Plot", command=lambda: self.cropSelected(cropListbox))
+        # Plant Settings Section
+        plantSettingFrame = Frame(self.plotWindow)
+
+        Label(plantSettingFrame, text="Planting Date").grid(column=0, row=0)
+        plantingDateSelector = DateEntry(plantSettingFrame, width=12, borderwidth=2)
+        if self.plant is not None:
+            plantingDateSelector.set_date(self.plant.plantingDate)
+
+        plantingDateSelector.grid(column=1, row=0)
+
+        plantSettingFrame.pack(expand=True)
+
+        selectCropButton = Button(self.plotWindow, text="Add Crop To Plot", command=lambda: self.cropSelected(cropListbox, plantingDateSelector.get_date()))
         selectCropButton.pack()
 
-    def cropSelected(self, cropListbox):
-        self.plant = Plant(cropListbox.get(cropListbox.curselection()), cropListbox.curselection())
+    def cropSelected(self, cropListbox, plantingDate):
+        try:
+            self.plant = Plant(cropListbox.get(cropListbox.curselection()), cropListbox.curselection(), plantingDate)
+        except _tkinter.TclError:
+            tkinter.messagebox.showerror("Error", "Please select a crop to plant")
+            return
 
-        # Add Crop Name to Plot
-        self.canvas.create_text(self.xCenterCell, self.yCenterCell, fill="white", text=f"{self.plant.name}\n{self.plant.quantity}", justify=CENTER)
+        # Add Crop Name to Plot, or update existing
+        newPlotText =f"{self.plant.name}\n{self.plant.quantity}\n{self.plant.plantingDate}"
+        if self.plotText is not 0:
+            self.canvas.itemconfigure(self.plotText, text=newPlotText)
+        else:
+            self.plotText = self.canvas.create_text(self.xCenterCell, self.yCenterCell, fill="white", text=newPlotText, justify=CENTER)
 
         self.plotWindow.destroy()
         self.canvas.itemconfig(self.canvasElement, fill=cMidMud, outline=cDarkMud)
