@@ -1,6 +1,7 @@
 import _tkinter
 import datetime
 import json
+import math
 import tkinter.messagebox
 from tkinter import *
 from PIL import ImageGrab
@@ -120,7 +121,7 @@ class Plant():
     def __init__(self, name, id, plantingDate):
         self.growthStates    = {"planned":  "Planned",
                                 "growing":  "Growing",
-                                "ready":    "Ready To Harvest"}
+                                "ready":    "Ready"}
         self.name       = name
         self.id         = id
         self.plantingDate = plantingDate
@@ -137,13 +138,17 @@ class Plant():
             myPlant = allPlants[self.name.lower()]
             self.quantity = myPlant["numberPerSquareFoot"]
             self.growTime = myPlant["growTime"]
+            self.displayName = myPlant["name"]
 
     def update(self):
         self.harvestDate = self.plantingDate + datetime.timedelta(days=self.growTime)
         self.daysTillHarvest = self.harvestDate - datetime.date.today()
         self.daysTillHarvest = (self.harvestDate - datetime.date.today()).days
         self.daysSincePlanted = (datetime.date.today() - self.plantingDate).days
-        self.percentGrown = (self.daysSincePlanted / self.growTime) * 100
+
+        #max percent grown is 100
+        percentGrown = math.ceil((self.daysSincePlanted / self.growTime) * 100)
+        self.percentGrown = percentGrown if percentGrown <= 100 else 100
 
         if datetime.date.today() >= self.plantingDate and datetime.date.today() < self.harvestDate:
             self.state = self.growthStates["growing"]
@@ -183,11 +188,20 @@ class Plot():
     def plotClicked(self, args):
         self.displayWindow()
 
+    def getAvailableCrops(self):
+        with open("plants.json", "r") as f:
+            cropsList = json.loads(f.read())
+            availableCrops = []
+            for key in cropsList.keys():
+                availableCrops.append(key.title())
+
+        return availableCrops
+
     def displayWindow(self):
         self.plotWindow = Toplevel(self.rootWindow)
         self.plotWindow.title("Edit Plot")
 
-        availableCrops = ["Broccoli", "Carrots", "Onion", "Tomato", "Sunflower", "Broccoli", "Lettuce", "SpringOnion", "Pumpkin"]
+        availableCrops = self.getAvailableCrops()
 
         selected = StringVar(self.plotWindow)
         selected.set(availableCrops[0])
@@ -233,7 +247,7 @@ class Plot():
             return
 
         # Add Crop Name to Plot, or update existing
-        newPlotText =f"{self.plant.name}\n{self.plant.quantity}\n{self.plant.plantingDate}"
+        newPlotText =f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.state})"
         if self.plotText is not 0:
             self.canvas.itemconfigure(self.plotText, text=newPlotText)
         else:
