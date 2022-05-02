@@ -1,4 +1,5 @@
 import _tkinter
+import datetime
 import json
 import tkinter.messagebox
 from tkinter import *
@@ -117,17 +118,38 @@ class Main:
 
 class Plant():
     def __init__(self, name, id, plantingDate):
+        self.growthStates    = {"planned":  "Planned",
+                                "growing":  "Growing",
+                                "ready":    "Ready To Harvest"}
         self.name       = name
         self.id         = id
-        self.quantity   = 1
         self.plantingDate = plantingDate
         self.getInfo()
+        self.state = self.growthStates["planned"]
+
+        self.update()
+        print(self.state)
+
 
     def getInfo(self):
         with open("plants.json", "r") as f:
             allPlants = json.loads(f.read())
             myPlant = allPlants[self.name.lower()]
             self.quantity = myPlant["numberPerSquareFoot"]
+            self.growTime = myPlant["growTime"]
+
+    def update(self):
+        self.harvestDate = self.plantingDate + datetime.timedelta(days=self.growTime)
+        self.daysTillHarvest = self.harvestDate - datetime.date.today()
+        self.daysTillHarvest = (self.harvestDate - datetime.date.today()).days
+        self.daysSincePlanted = (datetime.date.today() - self.plantingDate).days
+        self.percentGrown = (self.daysSincePlanted / self.growTime) * 100
+
+        if datetime.date.today() >= self.plantingDate and datetime.date.today() < self.harvestDate:
+            self.state = self.growthStates["growing"]
+
+        if datetime.date.today() >= self.harvestDate:
+            self.state = self.growthStates["ready"]
 
 class Plot():
     def __init__(self, x, y, root, tileWidth):

@@ -2,89 +2,49 @@
   "broccoli": {
     "name": "Broccoli",
     "variety": "Marathon F1",
-    "outdoorSowStart": "March",
-    "outdoorSowEnd": "June",
-    "indoorSowStart": "March",
-    "indoorSowEnd": "April",
-    "harvestStart": "August",
-    "harvestEnd": "October",
-    "numberPerSquareFoot": 1
+    "numberPerSquareFoot": 1,
+    "growTime": 70
   },
   "carrots": {
     "name": "Carrots",
     "variety": "Autumn King",
-    "outdoorSowStart": "March",
-    "outdoorSowEnd": "July",
-    "indoorSowStart": "",
-    "indoorSowEnd": "",
-    "harvestStart": "June",
-    "harvestEnd": "November",
-    "numberPerSquareFoot": 16
+    "numberPerSquareFoot": 16,
+    "growTime": 100
   },
   "onion": {
     "name": "Onions",
     "variety": "Bedfordshire Champion",
-    "outdoorSowStart": "March",
-    "outdoorSowEnd": "May",
-    "indoorSowStart": "January",
-    "indoorSowEnd": "March",
-    "harvestStart": "August",
-    "harvestEnd": "September",
-    "numberPerSquareFoot": 4
+    "numberPerSquareFoot": 4,
+    "growTime": 100
   },
   "tomato": {
     "name": "Tomatoes",
     "variety": "Gardeners Delight",
-    "outdoorSowStart": "",
-    "outdoorSowEnd": "",
-    "indoorSowStart": "April",
-    "indoorSowEnd": "May",
-    "harvestStart": "July",
-    "harvestEnd": "October",
-    "numberPerSquareFoot": 1
+    "numberPerSquareFoot": 1,
+    "growTime": 70
   },
   "sunflower": {
     "name": "Sunflower",
     "variety": "Giant",
-    "outdoorSowStart": "March",
-    "outdoorSowEnd": "May",
-    "indoorSowStart": "March",
-    "indoorSowEnd": "May",
-    "harvestStart": "June",
-    "harvestEnd": "September",
-    "numberPerSquareFoot": 1
+    "numberPerSquareFoot": 1,
+    "growTime": 110
   },
   "lettuce": {
     "name": "Lettuce",
     "variety": "All Year Round",
-    "outdoorSowStart": "March",
-    "outdoorSowEnd": "October",
-    "indoorSowStart": "January",
-    "indoorSowEnd": "December",
-    "harvestStart": "April",
-    "harvestEnd": "September",
-    "numberPerSquareFoot": 4
+    "numberPerSquareFoot": 4,
+    "growTime": 30
   },
   "springonion": {
     "name": "Spring Onion",
     "variety": "Ramrod",
-    "outdoorSowStart": "March",
-    "outdoorSowEnd": "September",
-    "indoorSowStart": "",
-    "indoorSowEnd": "",
-    "harvestStart": "March",
-    "harvestEnd": "October",
-    "numberPerSquareFoot": 16
+    "numberPerSquareFoot": 16,
+    "growTime": 50
   },
   "pumpkin": {
     "name": "Pumpkin",
     "variety": "Charmant PMR-F1",
-    "outdoorSowStart": "May",
-    "outdoorSowEnd": "June",
-    "indoorSowStart": "April",
-    "indoorSowEnd": "May",
-    "harvestStart": "September",
-    "harvestEnd": "November",
-    "numberPerSquareFoot": 1
+    "numberPerSquareFoot": 1,
+    "growTime": 110
   }
 }
