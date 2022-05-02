@@ -142,7 +142,6 @@ class Plant():
 
     def update(self):
         self.harvestDate = self.plantingDate + datetime.timedelta(days=self.growTime)
-        self.daysTillHarvest = self.harvestDate - datetime.date.today()
         self.daysTillHarvest = (self.harvestDate - datetime.date.today()).days
         self.daysSincePlanted = (datetime.date.today() - self.plantingDate).days
 
