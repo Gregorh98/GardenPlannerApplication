@@ -39,9 +39,9 @@ class Main:
         self.heightEntryBox = Entry(self.configurationWindow)
         self.heightEntryBox.grid(row=1, column=1)
 
-        Button(self.configurationWindow, text="Map My Garden", command=self.updateGarden).grid(row=2, column=0, columnspan=2)
+        Button(self.configurationWindow, text="Map My Garden", command=lambda :self.updateGarden(int(self.heightEntryBox.get()), int(self.widthEntryBox.get()))).grid(row=2, column=0, columnspan=2)
 
-    def updateGarden(self):
+    def updateGarden(self, height, width):
         if self.gardenMap != []:
             overwriteConfirm = tkinter.messagebox.askyesno(title="Overwrite Warning",
                                                            message="This will overwrite the current plot. Do you wish to continue?")
@@ -50,8 +50,8 @@ class Main:
                 tkinter.messagebox.showinfo(title="Overwrite Aborted", message="Configuration update cancelled")
                 return
 
-        self.height = int(self.heightEntryBox.get())
-        self.width = int(self.widthEntryBox.get())
+        self.height = height
+        self.width = width
 
         self.gardenMap = []
 
@@ -112,7 +112,12 @@ class Main:
             f.write(jsonDump)
 
     def loadGarden(self):
-        return
+        with open("garden.json", "r") as f:
+            jsonDump = json.loads(f.read())
+        height = jsonDump["general"]["gardenHeight"]
+        width = jsonDump["general"]["gardenWidth"]
+        self.updateGarden(height, width)
+        print(jsonDump)
 
     def drawGardenMap(self):
         self.c = Canvas(self.root, background=cGrass, height=((2 * self.tileWidth) + self.height * self.tileWidth),
@@ -276,7 +281,7 @@ class Plot():
 
     def cropSelected(self, cropListbox, plantingDate):
         try:
-            self.plant = Plant(cropListbox.get(cropListbox.curselection()), cropListbox.curselection(), plantingDate)
+            self.plant = Plant(cropListbox.get(cropListbox.curselection()), cropListbox.curselection()[0], plantingDate)
         except _tkinter.TclError:
             tkinter.messagebox.showerror("Error", "Please select a crop to plant")
             return
