@@ -108,7 +108,7 @@ class Main:
                     }
 
         jsonDump = json.dumps(save, default=str)
-        with open("garden.sav", "w") as f:
+        with open("garden.json", "w") as f:
             f.write(jsonDump)
 
     def loadGarden(self):
