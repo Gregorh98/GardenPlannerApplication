@@ -39,8 +39,7 @@ class Main:
         self.heightEntryBox = Entry(self.configurationWindow)
         self.heightEntryBox.grid(row=1, column=1)
 
-        Button(self.configurationWindow, text="Map My Garden", command=self.updateGarden).grid(row=2, column=0,
-                                                                                               columnspan=2)
+        Button(self.configurationWindow, text="Map My Garden", command=self.updateGarden).grid(row=2, column=0, columnspan=2)
 
     def updateGarden(self):
         if self.gardenMap != []:
@@ -76,12 +75,18 @@ class Main:
     def loadFile(self):
         pass
 
-    def saveFile(self):
+    def saveImage(self):
         x = self.root.winfo_rootx() + self.c.winfo_x()
         y = self.root.winfo_rooty() + self.c.winfo_y()
         x1 = x + self.c.winfo_width()
         y1 = y + self.c.winfo_height()
-        ImageGrab.grab().crop((x, y, x1, y1)).save("file.png")
+        ImageGrab.grab().crop((x, y, x1, y1)).save("garden.png")
+
+    def saveGarden(self):
+        return
+
+    def loadGarden(self):
+        return
 
     def drawGardenMap(self):
         self.c = Canvas(self.root, background=cGrass, height=((2 * self.tileWidth) + self.height * self.tileWidth),
@@ -93,11 +98,14 @@ class Main:
         configButton = Button(buttonFrame, text="Configure\nPlot Size", command=self.configurePlotSize)
         configButton.grid(row=0, column=0, padx=2, pady=1, sticky=EW)
 
-        saveButton = Button(buttonFrame, text="Save Image", command=self.saveFile)
-        saveButton.grid(row=1, column=0, padx=2, pady=1, sticky=EW)
+        saveImageButton = Button(buttonFrame, text="Save Image", command=self.saveImage)
+        saveImageButton.grid(row=1, column=0, padx=2, pady=1, sticky=EW)
 
-        loadButton = Button(buttonFrame, text="Load", command=self.loadFile, state=DISABLED)
-        loadButton.grid(row=2, column=0, padx=2, pady=1, sticky=EW)
+        saveButton = Button(buttonFrame, text="Save Garden", command=self.saveGarden)
+        saveButton.grid(row=2, column=0, padx=2, pady=1, sticky=EW)
+
+        loadButton = Button(buttonFrame, text="Load Garden", command=self.loadGarden)
+        loadButton.grid(row=3, column=0, padx=2, pady=1, sticky=EW)
 
         buttonFrame.grid(row=0, column=1, sticky=N)
 
