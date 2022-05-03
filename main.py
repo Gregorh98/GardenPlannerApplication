@@ -83,7 +83,33 @@ class Main:
         ImageGrab.grab().crop((x, y, x1, y1)).save("garden.png")
 
     def saveGarden(self):
-        return
+        save = {}
+        # General settings
+        save["general"] = {
+            "tileWidth":    self.tileWidth,
+            "gardenWidth":  self.width,
+            "gardenHeight": self.height
+        }
+
+        # Plot Settings
+        for row in self.gardenMap:
+            for plot in row:
+                save[plot.id] = {}
+                if plot.plant is not None:
+
+                    save[plot.id]["plot"] = {
+                        "x": plot.x,
+                        "y": plot.y
+                    }
+                    save[plot.id]["plant"] = {
+                        "name":         plot.plant.name,
+                        "id":           plot.plant.id,
+                        "plantingDate": plot.plant.plantingDate
+                    }
+
+        jsonDump = json.dumps(save, default=str)
+        with open("garden.sav", "w") as f:
+            f.write(jsonDump)
 
     def loadGarden(self):
         return
@@ -133,20 +159,22 @@ class Plant():
         self.name       = name
         self.id         = id
         self.plantingDate = plantingDate
-        self.getInfo()
         self.state = self.growthStates["planned"]
 
+        jsonInfo = self.getInfo()
+        self.quantity = jsonInfo["numberPerSquareFoot"]
+        self.growTime = jsonInfo["growTime"]
+        self.displayName = jsonInfo["name"]
+
         self.update()
-        print(self.state)
 
 
     def getInfo(self):
         with open("plants.json", "r") as f:
             allPlants = json.loads(f.read())
             myPlant = allPlants[self.name.lower()]
-            self.quantity = myPlant["numberPerSquareFoot"]
-            self.growTime = myPlant["growTime"]
-            self.displayName = myPlant["name"]
+            return myPlant
+
 
     def update(self):
         self.harvestDate = self.plantingDate + datetime.timedelta(days=self.growTime)
