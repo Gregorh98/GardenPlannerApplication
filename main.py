@@ -261,43 +261,44 @@ class Plot():
         selected.set(availableCrops[0])
 
         # Listbox Section
-        listFrame = Frame(self.plotWindow)
+        listFrame = LabelFrame(self.plotWindow, text="Select Plant")
 
         cropListbox = Listbox(listFrame, height=6)
         for x in availableCrops:
             cropListbox.insert(END, x)
-        cropListbox.pack(side=LEFT, fill="y")
+        cropListbox.pack(side=LEFT, fill="y", padx=2, pady=(0,5))
         if self.plant is not None:
             cropListbox.select_set(self.plant.id)
 
         scrollbar = Scrollbar(listFrame, orient="vertical")
         scrollbar.config(command=cropListbox.yview)
-        scrollbar.pack(side="right", fill="y")
+        scrollbar.pack(side="right", fill="y", pady=(0,5))
 
         cropListbox.config(yscrollcommand=scrollbar.set)
 
-        listFrame.pack()
+        listFrame.pack(pady=5, padx=5, expand=TRUE, side=LEFT, fill="both")
 
         # Plant Settings Section
-        plantSettingFrame = Frame(self.plotWindow)
+        plantSettingFrame = LabelFrame(self.plotWindow, text="Configure Plant")
 
+        #Planting Date
         Label(plantSettingFrame, text="Planting Date").grid(column=0, row=0)
         plantingDateSelector = DateEntry(plantSettingFrame, width=12, borderwidth=2)
         if self.plant is not None:
             plantingDateSelector.set_date(self.plant.plantingDate)
 
-        plantingDateSelector.grid(column=1, row=0)
+        plantingDateSelector.grid(column=1, row=0, padx=2, pady=(2, 0))
 
-        plantSettingFrame.pack(expand=True)
+        plantSettingFrame.pack(pady=(5,0), padx=(0,5), expand=TRUE, fill="both")
 
         selectCropButton = Button(self.plotWindow, text="Add Crop To Plot", command=lambda: self.cropSelected(cropListbox, plantingDateSelector.get_date()))
-        selectCropButton.pack()
+        selectCropButton.pack(pady=5, padx=(0,5), expand=TRUE, side=LEFT, fill="both")
 
     def getNewPlotText(self):
         if self.plant.state == self.plant.growthStates["planned"] or self.plant.state == self.plant.growthStates["ready"]:
             return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.state})"
         else:
-            return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.percentGrown}% grown)"
+            return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.percentGrown}%)"
 
     def cropSelected(self, cropListbox, plantingDate):
         try:
