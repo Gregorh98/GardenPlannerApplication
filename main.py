@@ -50,7 +50,8 @@ class Main:
             overwriteConfirm = tkinter.messagebox.askyesno(title="Overwrite Warning",
                                                            message="This will overwrite the current plot. Do you wish to continue?")
             if overwriteConfirm == False:
-                self.configurationWindow.destroy()
+                if self.configurationWindow is not None:
+                    self.configurationWindow.destroy()
                 tkinter.messagebox.showinfo(title="Overwrite Aborted", message="Configuration update cancelled")
                 return
 
@@ -83,34 +84,47 @@ class Main:
         x1 = x + self.c.winfo_width()
         y1 = y + self.c.winfo_height()
         ImageGrab.grab().crop((x, y, x1, y1)).save(imageExportPath)
+        tkinter.messagebox.showinfo("Image Saved", f"Garden image saved successfully. Image located at '{imageExportPath}'")
 
     def saveGarden(self):
-        save = {}
-        # General settings
-        save["general"] = {
-            "tileWidth":    self.tileWidth,
-            "gardenWidth":  self.width,
-            "gardenHeight": self.height
-        }
+        if exists(saveExportPath):
+            overwriteWarning = tkinter.messagebox.askyesno("Overwrite Warning",
+                                                           "There is an existing save. Are you sure you want to overwrite?")
 
-        # Plot Settings
-        for row in self.gardenMap:
-            for plot in row:
-                save[plot.id] = {}
-                if plot.plant is not None:
-                    # noinspection PyTypeChecker
-                    save[plot.id]["plant"] = {
-                        "name":         plot.plant.name,
-                        "id":           plot.plant.id,
-                        "plantingDate": plot.plant.plantingDate
-                    }
-                else:
-                    # noinspection PyTypeChecker
-                    save[plot.id]["plant"] = None
+        if overwriteWarning:
+            save = {}
+            # General settings
+            save["general"] = {
+                "tileWidth":    self.tileWidth,
+                "gardenWidth":  self.width,
+                "gardenHeight": self.height
+            }
 
-        jsonDump = json.dumps(save, default=str)
-        with open(saveExportPath, "w") as f:
-            f.write(jsonDump)
+            # Plot Settings
+            for row in self.gardenMap:
+                for plot in row:
+                    save[plot.id] = {}
+                    if plot.plant is not None:
+                        # noinspection PyTypeChecker
+                        save[plot.id]["plant"] = {
+                            "name":         plot.plant.name,
+                            "id":           plot.plant.id,
+                            "plantingDate": plot.plant.plantingDate
+                        }
+                    else:
+                        # noinspection PyTypeChecker
+                        save[plot.id]["plant"] = None
+
+            jsonDump = json.dumps(save, default=str)
+
+
+
+            with open(saveExportPath, "w") as f:
+                f.write(jsonDump)
+                tkinter.messagebox.showinfo("Garden Saved", f"Garden saved successfully. Save file located at '{saveExportPath}'")
+        else:
+            tkinter.messagebox.showinfo("Save cancelled", "Save cancelled!")
+
 
     def loadGarden(self):
         with open(saveExportPath, "r") as f:
@@ -163,10 +177,6 @@ class Main:
     def getDimensions(self):
         self.width = int(self.widthEntryBox.get())
         self.height = int(self.heightEntryBox.get())
-
-
-
-
 
 A = Main()
 A.root.mainloop()
