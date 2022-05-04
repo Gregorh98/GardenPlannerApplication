@@ -217,7 +217,6 @@ class Plot():
         self.plotText   = None
 
         self.plant       = None
-        self.plantedDate = None
 
     def draw(self, canvas):
         self.canvas = canvas
@@ -225,11 +224,22 @@ class Plot():
                                                      self.tileWidth + self.x * self.tileWidth + self.tileWidth,
                                                      self.tileWidth + self.y * self.tileWidth + self.tileWidth, fill=cLightMud,
                                                      outline=cMidMud)
-        self.canvas.tag_bind(self.canvasElement, "<Button-1>", self.plotClicked)
+        self.canvas.tag_bind(self.canvasElement, "<Button-1>", self.eventAddEditCrop)
+        self.canvas.tag_bind(self.canvasElement, "<Button-3>", self.eventRemoveCrop)
 
 
-    def plotClicked(self, args):
+    def eventAddEditCrop(self, args):
         self.displayWindow()
+
+    def eventRemoveCrop(self, args):
+        self.plant = None
+
+        self.canvas.delete(self.plotText)
+        self.plotText = None
+
+        self.canvas.itemconfig(self.canvasElement, fill=cLightMud, outline=cMidMud)
+
+
 
     def getAvailableCrops(self):
         with open("plants.json", "r") as f:
