@@ -6,6 +6,7 @@ import tkinter.messagebox
 from tkinter import *
 from PIL import ImageGrab
 from tkcalendar import DateEntry
+from os.path import exists
 
 #Resources
 cWood       = "#bca464"
@@ -13,6 +14,10 @@ cGrass      = "#2c3c1e"
 cLightMud   = "#52402a"
 cMidMud     = "#482f1f"
 cDarkMud    = "#2e2018"
+
+#Paths
+saveExportPath      = "garden.json"
+imageExportPath     = "garden.png"
 
 #TODO - Split this all out into different files
 
@@ -24,8 +29,15 @@ class Main:
         self.width = 3
         self.tileWidth = 64  # The dimensions of the representation of one square foot of land
         self.configurationWindow = None
+
         self.gardenMap = []
         self.drawGardenMap()
+
+        loadGardenOnLaunch = True
+        if exists("garden.json") and loadGardenOnLaunch:
+            self.gardenMap = []
+            self.loadGarden()
+            return
 
     def configurePlotSize(self):
         self.configurationWindow = Toplevel(self.root)
@@ -79,7 +91,7 @@ class Main:
         y = self.root.winfo_rooty() + self.c.winfo_y()
         x1 = x + self.c.winfo_width()
         y1 = y + self.c.winfo_height()
-        ImageGrab.grab().crop((x, y, x1, y1)).save("garden.png")
+        ImageGrab.grab().crop((x, y, x1, y1)).save(imageExportPath)
 
     def saveGarden(self):
         save = {}
@@ -95,20 +107,22 @@ class Main:
             for plot in row:
                 save[plot.id] = {}
                 if plot.plant is not None:
+                    # noinspection PyTypeChecker
                     save[plot.id]["plant"] = {
                         "name":         plot.plant.name,
                         "id":           plot.plant.id,
                         "plantingDate": plot.plant.plantingDate
                     }
                 else:
+                    # noinspection PyTypeChecker
                     save[plot.id]["plant"] = None
 
         jsonDump = json.dumps(save, default=str)
-        with open("garden.json", "w") as f:
+        with open(saveExportPath, "w") as f:
             f.write(jsonDump)
 
     def loadGarden(self):
-        with open("garden.json", "r") as f:
+        with open(saveExportPath, "r") as f:
             jsonDump = json.loads(f.read())
         # Update height and width
         height = jsonDump["general"]["gardenHeight"]
@@ -186,6 +200,7 @@ class Plant():
 
     def update(self):
         self.harvestDate = self.plantingDate + datetime.timedelta(days=self.growTime)
+        # noinspection PyTypeChecker
         self.daysTillHarvest = (self.harvestDate - datetime.date.today()).days
         self.daysSincePlanted = (datetime.date.today() - self.plantingDate).days
 
