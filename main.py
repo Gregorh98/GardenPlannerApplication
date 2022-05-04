@@ -94,10 +94,6 @@ class Main:
         for row in self.gardenMap:
             for plot in row:
                 save[plot.id] = {}
-                save[plot.id]["plot"] = {
-                    "x": plot.x,
-                    "y": plot.y
-                }
                 if plot.plant is not None:
                     save[plot.id]["plant"] = {
                         "name":         plot.plant.name,
@@ -114,14 +110,16 @@ class Main:
     def loadGarden(self):
         with open("garden.json", "r") as f:
             jsonDump = json.loads(f.read())
+        # Update height and width
         height = jsonDump["general"]["gardenHeight"]
         width = jsonDump["general"]["gardenWidth"]
         self.updateGarden(height, width)
         for row in self.gardenMap:
             for plot in row:
+                #Update plant in plot
                 plotPlant = jsonDump[f"[{plot.x}, {plot.y}]"]["plant"]
                 if plotPlant is not None:
-                    self.gardenMap[plot.y][plot.x].plant = Plant(plotPlant["name"], plotPlant["id"], plotPlant["plantingDate"])
+                    self.gardenMap[plot.y][plot.x].plant = Plant(plotPlant["name"], plotPlant["id"], datetime.date.fromisoformat(plotPlant["plantingDate"]))
                     self.gardenMap[plot.y][plot.x].updateOnLoad()
 
     def drawGardenMap(self):
@@ -166,14 +164,10 @@ class Plant():
         self.growthStates    = {"planned":  "Planned",
                                 "growing":  "Growing",
                                 "ready":    "Ready"}
-        self.name       = name
-        self.id         = id
-        if type(plantingDate) == str:
-            self.plantingDate = datetime.date.fromisoformat(plantingDate)
-        else:
-            self.plantingDate = plantingDate
-        self.getInfo()
-        self.state = self.growthStates["planned"]
+        self.name           = name
+        self.id             = id
+        self.plantingDate   = plantingDate
+        self.state          = self.growthStates["planned"]
 
         jsonInfo = self.getInfo()
         self.quantity = jsonInfo["numberPerSquareFoot"]
@@ -181,7 +175,6 @@ class Plant():
         self.displayName = jsonInfo["name"]
 
         self.update()
-        print(self.state)
 
 
     def getInfo(self):
