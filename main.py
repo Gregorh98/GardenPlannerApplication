@@ -27,6 +27,42 @@ class Main:
             self.loadGarden()
             return
 
+    def initialiseMainWindow(self):
+        self.c = Canvas(self.root, background=cGrass, height=((2 * self.tileWidth) + self.height * self.tileWidth),
+                        width=((2 * self.tileWidth) + self.width * self.tileWidth))
+        self.c.grid(row=0, column=0)
+
+        buttonFrame = Frame(self.root)
+
+        row = 0
+
+        configButton = Button(buttonFrame, text="Configure\nPlot Size", command=self.showConfigureWindow)
+        configButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
+
+        row = 1
+
+        scheduleButton = Button(buttonFrame, text="View Schedule", command=self.showScheduleWindow)
+        scheduleButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
+
+        row = 2
+
+        saveButton = Button(buttonFrame, text="Save Garden", command=self.saveGarden)
+        saveButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
+
+        row = 3
+
+        loadButton = Button(buttonFrame, text="Load Garden", command=self.loadGarden)
+        loadButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
+
+        row = 4
+
+        saveImageButton = Button(buttonFrame, text="Save Image", command=self.saveImage)
+        saveImageButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
+
+        buttonFrame.grid(row=0, column=1, sticky=N)
+
+        self.updateGarden(self.height, self.width)
+
     def showConfigureWindow(self):
         self.configurationWindow = Toplevel(self.root)
 
@@ -41,6 +77,9 @@ class Main:
         self.heightEntryBox.grid(row=1, column=1)
 
         Button(self.configurationWindow, text="Map My Garden", command=lambda :self.updateGarden(int(self.heightEntryBox.get()), int(self.widthEntryBox.get()))).grid(row=2, column=0, columnspan=2)
+
+    def showScheduleWindow(self):
+        print ("Schedule")
 
     def saveImage(self):
         x = self.root.winfo_rootx() + self.c.winfo_x()
@@ -112,29 +151,6 @@ class Main:
                 newPlot = Plot(x, y, self.root, self.tileWidth)
                 newPlot.draw(self.c)
                 self.gardenMap[y].append(newPlot)
-
-    def initialiseMainWindow(self):
-        self.c = Canvas(self.root, background=cGrass, height=((2 * self.tileWidth) + self.height * self.tileWidth),
-                        width=((2 * self.tileWidth) + self.width * self.tileWidth))
-        self.c.grid(row=0, column=0)
-
-        buttonFrame = Frame(self.root)
-
-        configButton = Button(buttonFrame, text="Configure\nPlot Size", command=self.showConfigureWindow)
-        configButton.grid(row=0, column=0, padx=2, pady=1, sticky=EW)
-
-        saveImageButton = Button(buttonFrame, text="Save Image", command=self.saveImage)
-        saveImageButton.grid(row=1, column=0, padx=2, pady=1, sticky=EW)
-
-        saveButton = Button(buttonFrame, text="Save Garden", command=self.saveGarden)
-        saveButton.grid(row=2, column=0, padx=2, pady=1, sticky=EW)
-
-        loadButton = Button(buttonFrame, text="Load Garden", command=self.loadGarden)
-        loadButton.grid(row=3, column=0, padx=2, pady=1, sticky=EW)
-
-        buttonFrame.grid(row=0, column=1, sticky=N)
-
-        self.updateGarden(self.height, self.width)
 
     def updateGarden(self, height, width):
         if self.gardenMap != []:
