@@ -5,7 +5,25 @@
     "numberPerSquareFoot": 1,
     "growTime": 70
   },
-  "carrots": {
+    "potato": {
+    "name": "Potato",
+    "variety": "Marris Piper",
+    "numberPerSquareFoot": 1,
+    "growTime": 90
+  },
+    "strawberry": {
+    "name": "Strawberries",
+    "variety": "Giant",
+    "numberPerSquareFoot": 1,
+    "growTime": 90
+  },
+    "mangetout": {
+    "name": "Mangetout",
+    "variety": "Speedy",
+    "numberPerSquareFoot": 1,
+    "growTime": 70
+  },
+  "carrot": {
     "name": "Carrots",
     "variety": "Autumn King",
     "numberPerSquareFoot": 16,

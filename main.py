@@ -192,6 +192,7 @@ class Plant():
         #max percent grown is 100
         percentGrown = math.ceil((self.daysSincePlanted / self.growTime) * 100)
         self.percentGrown = percentGrown if percentGrown <= 100 else 100
+        self.percentGrown = percentGrown if percentGrown >= 0 else 0
 
         if datetime.date.today() >= self.plantingDate and datetime.date.today() < self.harvestDate:
             self.state = self.growthStates["growing"]
@@ -292,6 +293,12 @@ class Plot():
         selectCropButton = Button(self.plotWindow, text="Add Crop To Plot", command=lambda: self.cropSelected(cropListbox, plantingDateSelector.get_date()))
         selectCropButton.pack()
 
+    def getNewPlotText(self):
+        if self.plant.state == self.plant.growthStates["planned"] or self.plant.state == self.plant.growthStates["ready"]:
+            return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.state})"
+        else:
+            return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.percentGrown}% grown)"
+
     def cropSelected(self, cropListbox, plantingDate):
         try:
             self.plant = Plant(cropListbox.get(cropListbox.curselection()), cropListbox.curselection()[0], plantingDate)
@@ -300,11 +307,10 @@ class Plot():
             return
 
         # Add Crop Name to Plot, or update existing
-        newPlotText =f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.state})"
         if self.plotText is not None:
-            self.canvas.itemconfigure(self.plotText, text=newPlotText)
+            self.canvas.itemconfigure(self.plotText, text=self.getNewPlotText())
         else:
-            self.plotText = self.canvas.create_text(self.xCenterCell, self.yCenterCell, fill="white", text=newPlotText, justify=CENTER)
+            self.plotText = self.canvas.create_text(self.xCenterCell, self.yCenterCell, fill="white", text=self.getNewPlotText(), justify=CENTER)
 
         self.plotWindow.destroy()
         self.canvas.itemconfig(self.canvasElement, fill=cMidMud, outline=cDarkMud)
@@ -312,8 +318,7 @@ class Plot():
     def updateOnLoad(self):
         self.canvas.itemconfig(self.canvasElement, fill=cMidMud, outline=cDarkMud)
 
-        newPlotText = f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.state})"
-        self.plotText = self.canvas.create_text(self.xCenterCell, self.yCenterCell, fill="white", text=newPlotText, justify=CENTER)
+        self.plotText = self.canvas.create_text(self.xCenterCell, self.yCenterCell, fill="white", text=self.getNewPlotText(), justify=CENTER)
 
 A = Main()
 A.root.mainloop()
