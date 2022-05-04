@@ -1,0 +1,43 @@
+import math
+import datetime
+import json
+
+class Plant():
+    def __init__(self, name, id, plantingDate):
+        self.growthStates    = {"planned":  "Planned",
+                                "growing":  "Growing",
+                                "ready":    "Ready"}
+        self.name           = name
+        self.id             = id
+        self.plantingDate   = plantingDate
+        self.state          = self.growthStates["planned"]
+
+        jsonInfo = self.getInfo()
+        self.quantity = jsonInfo["numberPerSquareFoot"]
+        self.growTime = jsonInfo["growTime"]
+        self.displayName = jsonInfo["name"] if ("\n" in jsonInfo["name"] or len(jsonInfo["name"])<8) else jsonInfo["name"][0:7]+"..."
+
+        self.update()
+
+    def getInfo(self):
+        with open("plants.json", "r") as f:
+            allPlants = json.loads(f.read())
+            myPlant = allPlants[self.name.lower()]
+            return myPlant
+
+    def update(self):
+        self.harvestDate = self.plantingDate + datetime.timedelta(days=self.growTime)
+        # noinspection PyTypeChecker
+        self.daysTillHarvest = (self.harvestDate - datetime.date.today()).days
+        self.daysSincePlanted = (datetime.date.today() - self.plantingDate).days
+
+        #max percent grown is 100
+        percentGrown = math.ceil((self.daysSincePlanted / self.growTime) * 100)
+        self.percentGrown = percentGrown if percentGrown <= 100 else 100
+        self.percentGrown = percentGrown if percentGrown >= 0 else 0
+
+        if self.plantingDate <= datetime.date.today() < self.harvestDate:
+            self.state = self.growthStates["growing"]
+
+        if datetime.date.today() >= self.harvestDate:
+            self.state = self.growthStates["ready"]
