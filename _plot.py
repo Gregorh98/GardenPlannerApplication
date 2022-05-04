@@ -6,6 +6,17 @@ from _plant import Plant
 from tkinter import *
 import tkinter.messagebox
 
+
+def getAvailableCrops():
+    with open("plants.json", "r") as f:
+        cropsList = json.loads(f.read())
+        availableCrops = []
+        for key in cropsList.keys():
+            availableCrops.append(key.title())
+
+    return availableCrops
+
+
 class Plot():
     def __init__(self, x, y, root, tileWidth):
         self.x = x
@@ -35,7 +46,7 @@ class Plot():
         self.canvas.tag_bind(self.canvasElement, "<Button-3>", self.eventRemoveCrop)
 
     def eventAddEditCrop(self, args):
-        self.displayWindow()
+        self.showEditPlotWindow()
 
     def eventRemoveCrop(self, args):
         self.plant = None
@@ -45,20 +56,17 @@ class Plot():
 
         self.canvas.itemconfig(self.canvasElement, fill=cLightMud, outline=cMidMud)
 
-    def getAvailableCrops(self):
-        with open("plants.json", "r") as f:
-            cropsList = json.loads(f.read())
-            availableCrops = []
-            for key in cropsList.keys():
-                availableCrops.append(key.title())
+    def getNewPlotText(self):
+        if self.plant.state == self.plant.growthStates["planned"] or self.plant.state == self.plant.growthStates["ready"]:
+            return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.state})"
+        else:
+            return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.percentGrown}%)"
 
-        return availableCrops
-
-    def displayWindow(self):
+    def showEditPlotWindow(self):
         self.plotWindow = Toplevel(self.rootWindow)
         self.plotWindow.title("Edit Plot")
 
-        availableCrops = self.getAvailableCrops()
+        availableCrops = getAvailableCrops()
 
         selected = StringVar(self.plotWindow)
         selected.set(availableCrops[0])
@@ -99,12 +107,6 @@ class Plot():
         selectCropButton = Button(self.plotWindow, text="Add Crop To Plot", command=lambda: self.cropSelected(cropListbox, plantingDateSelector.get_date()))
         selectCropButton.pack(pady=5, padx=(0,5), expand=TRUE, side=LEFT, fill="both")
 
-    def getNewPlotText(self):
-        if self.plant.state == self.plant.growthStates["planned"] or self.plant.state == self.plant.growthStates["ready"]:
-            return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.state})"
-        else:
-            return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.percentGrown}%)"
-
     def cropSelected(self, cropListbox, plantingDate):
         try:
             self.plant = Plant(cropListbox.get(cropListbox.curselection()), cropListbox.curselection()[0], plantingDate)
@@ -112,16 +114,13 @@ class Plot():
             tkinter.messagebox.showerror("Error", "Please select a crop to plant")
             return
 
-        # Add Crop Name to Plot, or update existing
+        self.update()
+        self.plotWindow.destroy()
+
+    def update(self):
+        self.canvas.itemconfig(self.canvasElement, fill=cMidMud, outline=cDarkMud)
         if self.plotText is not None:
             self.canvas.itemconfigure(self.plotText, text=self.getNewPlotText())
         else:
-            self.plotText = self.canvas.create_text(self.xCenterCell, self.yCenterCell, fill="white", text=self.getNewPlotText(), justify=CENTER)
-
-        self.plotWindow.destroy()
-        self.canvas.itemconfig(self.canvasElement, fill=cMidMud, outline=cDarkMud)
-
-    def updateOnLoad(self):
-        self.canvas.itemconfig(self.canvasElement, fill=cMidMud, outline=cDarkMud)
-
-        self.plotText = self.canvas.create_text(self.xCenterCell, self.yCenterCell, fill="white", text=self.getNewPlotText(), justify=CENTER)
+            self.plotText = self.canvas.create_text(self.xCenterCell, self.yCenterCell, fill="white",
+                                                    text=self.getNewPlotText(), justify=CENTER)

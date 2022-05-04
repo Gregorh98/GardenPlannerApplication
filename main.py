@@ -3,14 +3,11 @@ import json
 import tkinter.messagebox
 from tkinter import *
 from PIL import ImageGrab
-
 from os.path import exists
 from _plot import Plot
 from _plant import Plant
 from _resources import *
 
-
-#TODO - Split this all out into different files
 
 class Main:
     def __init__(self):
@@ -106,7 +103,7 @@ class Main:
                 plotPlant = jsonDump[f"[{plot.x}, {plot.y}]"]["plant"]
                 if plotPlant is not None:
                     self.gardenMap[plot.y][plot.x].plant = Plant(plotPlant["name"], plotPlant["id"], datetime.date.fromisoformat(plotPlant["plantingDate"]))
-                    self.gardenMap[plot.y][plot.x].updateOnLoad()
+                    self.gardenMap[plot.y][plot.x].update()
 
     def generateGardenMap(self):
         for y in range(self.height):
