@@ -34,7 +34,6 @@ class Plot():
         self.canvas.tag_bind(self.canvasElement, "<Button-1>", self.eventAddEditCrop)
         self.canvas.tag_bind(self.canvasElement, "<Button-3>", self.eventRemoveCrop)
 
-
     def eventAddEditCrop(self, args):
         self.displayWindow()
 
@@ -45,8 +44,6 @@ class Plot():
         self.plotText = None
 
         self.canvas.itemconfig(self.canvasElement, fill=cLightMud, outline=cMidMud)
-
-
 
     def getAvailableCrops(self):
         with open("plants.json", "r") as f:
@@ -72,10 +69,11 @@ class Plot():
         cropListbox = Listbox(listFrame, height=6)
         for x in availableCrops:
             cropListbox.insert(END, x)
-        cropListbox.select_set(0)
         cropListbox.pack(side=LEFT, fill="y", padx=2, pady=(0,5))
         if self.plant is not None:
             cropListbox.select_set(self.plant.id)
+        else:
+            cropListbox.select_set(0)
 
         scrollbar = Scrollbar(listFrame, orient="vertical")
         scrollbar.config(command=cropListbox.yview)
