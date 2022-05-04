@@ -172,7 +172,7 @@ class Plant():
         jsonInfo = self.getInfo()
         self.quantity = jsonInfo["numberPerSquareFoot"]
         self.growTime = jsonInfo["growTime"]
-        self.displayName = jsonInfo["name"]
+        self.displayName = jsonInfo["name"] if ("\n" in jsonInfo["name"] or len(jsonInfo["name"])<8) else jsonInfo["name"][0:7]+"..."
 
         self.update()
 
