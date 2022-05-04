@@ -23,6 +23,7 @@ class Main:
         self.height = 2
         self.width = 3
         self.tileWidth = 64  # The dimensions of the representation of one square foot of land
+        self.configurationWindow = None
         self.gardenMap = []
         self.drawGardenMap()
 
@@ -70,10 +71,8 @@ class Main:
 
         self.c.configure(height=((2 * self.tileWidth) + self.height * self.tileWidth),
                          width=((2 * self.tileWidth) + self.width * self.tileWidth))
-        self.configurationWindow.destroy()
-
-    def loadFile(self):
-        pass
+        if self.configurationWindow is not None:
+            self.configurationWindow.destroy()
 
     def saveImage(self):
         x = self.root.winfo_rootx() + self.c.winfo_x()
@@ -95,17 +94,18 @@ class Main:
         for row in self.gardenMap:
             for plot in row:
                 save[plot.id] = {}
+                save[plot.id]["plot"] = {
+                    "x": plot.x,
+                    "y": plot.y
+                }
                 if plot.plant is not None:
-
-                    save[plot.id]["plot"] = {
-                        "x": plot.x,
-                        "y": plot.y
-                    }
                     save[plot.id]["plant"] = {
                         "name":         plot.plant.name,
                         "id":           plot.plant.id,
                         "plantingDate": plot.plant.plantingDate
                     }
+                else:
+                    save[plot.id]["plant"] = None
 
         jsonDump = json.dumps(save, default=str)
         with open("garden.json", "w") as f:
@@ -117,7 +117,12 @@ class Main:
         height = jsonDump["general"]["gardenHeight"]
         width = jsonDump["general"]["gardenWidth"]
         self.updateGarden(height, width)
-        print(jsonDump)
+        for row in self.gardenMap:
+            for plot in row:
+                plotPlant = jsonDump[f"[{plot.x}, {plot.y}]"]["plant"]
+                if plotPlant is not None:
+                    self.gardenMap[plot.y][plot.x].plant = Plant(plotPlant["name"], plotPlant["id"], plotPlant["plantingDate"])
+                    self.gardenMap[plot.y][plot.x].updateOnLoad()
 
     def drawGardenMap(self):
         self.c = Canvas(self.root, background=cGrass, height=((2 * self.tileWidth) + self.height * self.tileWidth),
@@ -163,7 +168,11 @@ class Plant():
                                 "ready":    "Ready"}
         self.name       = name
         self.id         = id
-        self.plantingDate = plantingDate
+        if type(plantingDate) == str:
+            self.plantingDate = datetime.date.fromisoformat(plantingDate)
+        else:
+            self.plantingDate = plantingDate
+        self.getInfo()
         self.state = self.growthStates["planned"]
 
         jsonInfo = self.getInfo()
@@ -172,6 +181,7 @@ class Plant():
         self.displayName = jsonInfo["name"]
 
         self.update()
+        print(self.state)
 
 
     def getInfo(self):
@@ -211,7 +221,7 @@ class Plot():
         self.id = str([x, y])
 
         self.rootWindow = root
-        self.plotText   = 0
+        self.plotText   = None
 
         self.plant       = None
         self.plantedDate = None
@@ -288,7 +298,7 @@ class Plot():
 
         # Add Crop Name to Plot, or update existing
         newPlotText =f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.state})"
-        if self.plotText is not 0:
+        if self.plotText is not None:
             self.canvas.itemconfigure(self.plotText, text=newPlotText)
         else:
             self.plotText = self.canvas.create_text(self.xCenterCell, self.yCenterCell, fill="white", text=newPlotText, justify=CENTER)
@@ -296,6 +306,11 @@ class Plot():
         self.plotWindow.destroy()
         self.canvas.itemconfig(self.canvasElement, fill=cMidMud, outline=cDarkMud)
 
+    def updateOnLoad(self):
+        self.canvas.itemconfig(self.canvasElement, fill=cMidMud, outline=cDarkMud)
+
+        newPlotText = f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.state})"
+        self.plotText = self.canvas.create_text(self.xCenterCell, self.yCenterCell, fill="white", text=newPlotText, justify=CENTER)
 
 A = Main()
 A.root.mainloop()
