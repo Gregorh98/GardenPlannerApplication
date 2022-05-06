@@ -82,8 +82,6 @@ class Main:
 
             jsonDump = json.dumps(save, default=str)
 
-
-
             with open(saveExportPath, "w") as f:
                 f.write(jsonDump)
                 tkinter.messagebox.showinfo("Garden Saved", f"Garden saved successfully. Save file located at '{saveExportPath}'")
