@@ -1,6 +1,7 @@
 import datetime
 import json
 import tkinter.messagebox
+from tkinter import ttk
 from tkinter import *
 from PIL import ImageGrab
 from os.path import exists
@@ -27,6 +28,43 @@ class Main:
             self.loadGarden()
             return
 
+    # region Windows
+    def initialiseMainWindow(self):
+        self.c = Canvas(self.root, background=cGrass, height=((2 * self.tileWidth) + self.height * self.tileWidth),
+                        width=((2 * self.tileWidth) + self.width * self.tileWidth))
+        self.c.grid(row=0, column=0)
+
+        buttonFrame = Frame(self.root)
+
+        row = 0
+
+        configButton = Button(buttonFrame, text="Configure\nPlot Size", command=self.showConfigureWindow)
+        configButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
+
+        row = 1
+
+        scheduleButton = Button(buttonFrame, text="View Schedule", command=self.showScheduleWindow)
+        scheduleButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
+
+        row = 2
+
+        saveButton = Button(buttonFrame, text="Save Garden", command=self.saveGarden)
+        saveButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
+
+        row = 3
+
+        loadButton = Button(buttonFrame, text="Load Garden", command=self.loadGarden)
+        loadButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
+
+        row = 4
+
+        saveImageButton = Button(buttonFrame, text="Save Image", command=self.saveImage)
+        saveImageButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
+
+        buttonFrame.grid(row=0, column=1, sticky=N)
+
+        self.updateGarden(self.height, self.width)
+
     def showConfigureWindow(self):
         self.configurationWindow = Toplevel(self.root)
 
@@ -40,8 +78,53 @@ class Main:
         self.heightEntryBox = Entry(self.configurationWindow)
         self.heightEntryBox.grid(row=1, column=1)
 
-        Button(self.configurationWindow, text="Map My Garden", command=lambda :self.updateGarden(int(self.heightEntryBox.get()), int(self.widthEntryBox.get()))).grid(row=2, column=0, columnspan=2)
+        Button(self.configurationWindow, text="Map My Garden", command=lambda: self.updateGarden(int(self.heightEntryBox.get()), int(self.widthEntryBox.get()))).grid(row=2, column=0, columnspan=2)
 
+    def showScheduleWindow(self):
+        self.scheduleWindow = Toplevel(self.root)
+        self.scheduleWindow.title("Schedule")
+
+        scheduleTableFrame = Frame(self.scheduleWindow)
+        scheduleTableFrame.pack()
+
+        scheduleTable = ttk.Treeview(scheduleTableFrame)
+
+        scheduleTable['columns'] = ('coords', 'cropName', 'plantDate', 'harvestDate', 'daysSincePlanted', 'daysTillGrown', 'percentGrown')
+
+        scheduleTable.column("#0", width=0, stretch=NO)
+        scheduleTable.column("coords", anchor=CENTER, width=80)
+        scheduleTable.column("cropName", anchor=CENTER, width=80)
+        scheduleTable.column("plantDate", anchor=CENTER, width=80)
+        scheduleTable.column("harvestDate", anchor=CENTER, width=80)
+        scheduleTable.column("daysSincePlanted", anchor=CENTER, width=80)
+        scheduleTable.column("daysTillGrown", anchor=CENTER, width=80)
+        scheduleTable.column("percentGrown", anchor=CENTER, width=100)
+
+        scheduleTable.heading("#0", text="", anchor=CENTER)
+        scheduleTable.heading("coords", text="Co-ords", anchor=CENTER)
+        scheduleTable.heading("cropName", text="Crop", anchor=CENTER)
+        scheduleTable.heading("plantDate", text="Planted Date", anchor=CENTER)
+        scheduleTable.heading("harvestDate", text="Harvest Date", anchor=CENTER)
+        scheduleTable.heading("daysSincePlanted", text="Since Planted", anchor=CENTER)
+        scheduleTable.heading("daysTillGrown", text="Till Harvest", anchor=CENTER)
+        scheduleTable.heading("percentGrown", text="Percent Grown", anchor=CENTER)
+
+        for row in self.gardenMap:
+            for plot in row:
+                scheduleTable.insert(parent='', index='end', text='', values=(
+                    plot.id,                                # Co-ordinates of the plot [x, y]
+                    plot.plant.name,                        # Name
+                    plot.plant.plantingDate,                # Date planted on
+                    plot.plant.harvestDate,                 # Date to harvest on
+                    f"{plot.plant.daysSincePlanted} days",  # number of days since planted
+                    f"{plot.plant.daysTillHarvest} days",   # number of days till harvest
+                    f"{plot.plant.percentGrown}%"           # percent grown
+                ))
+
+        scheduleTable.pack()
+    # endregion
+
+    # region Save and Load
     def saveImage(self):
         x = self.root.winfo_rootx() + self.c.winfo_x()
         y = self.root.winfo_rooty() + self.c.winfo_y()
@@ -104,6 +187,7 @@ class Main:
                 if plotPlant is not None:
                     self.gardenMap[plot.y][plot.x].plant = Plant(plotPlant["name"], plotPlant["id"], datetime.date.fromisoformat(plotPlant["plantingDate"]))
                     self.gardenMap[plot.y][plot.x].update()
+    # endregion
 
     def generateGardenMap(self):
         for y in range(self.height):
@@ -112,29 +196,6 @@ class Main:
                 newPlot = Plot(x, y, self.root, self.tileWidth)
                 newPlot.draw(self.c)
                 self.gardenMap[y].append(newPlot)
-
-    def initialiseMainWindow(self):
-        self.c = Canvas(self.root, background=cGrass, height=((2 * self.tileWidth) + self.height * self.tileWidth),
-                        width=((2 * self.tileWidth) + self.width * self.tileWidth))
-        self.c.grid(row=0, column=0)
-
-        buttonFrame = Frame(self.root)
-
-        configButton = Button(buttonFrame, text="Configure\nPlot Size", command=self.showConfigureWindow)
-        configButton.grid(row=0, column=0, padx=2, pady=1, sticky=EW)
-
-        saveImageButton = Button(buttonFrame, text="Save Image", command=self.saveImage)
-        saveImageButton.grid(row=1, column=0, padx=2, pady=1, sticky=EW)
-
-        saveButton = Button(buttonFrame, text="Save Garden", command=self.saveGarden)
-        saveButton.grid(row=2, column=0, padx=2, pady=1, sticky=EW)
-
-        loadButton = Button(buttonFrame, text="Load Garden", command=self.loadGarden)
-        loadButton.grid(row=3, column=0, padx=2, pady=1, sticky=EW)
-
-        buttonFrame.grid(row=0, column=1, sticky=N)
-
-        self.updateGarden(self.height, self.width)
 
     def updateGarden(self, height, width):
         if self.gardenMap != []:
