@@ -32,9 +32,10 @@ class Plot():
         self.id = str([x, y])
 
         self.rootWindow = root
-        self.plotText   = None
+        self.plotWindow = None
 
-        self.plant       = None
+        self.plotText   = None
+        self.plant      = None
 
     def draw(self, canvas):
         self.canvas = canvas
@@ -63,7 +64,11 @@ class Plot():
             return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.percentGrown}%)"
 
     def showEditPlotWindow(self):
+        if self.plotWindow is not None:
+            return
+
         self.plotWindow = Toplevel(self.rootWindow)
+        self.plotWindow.protocol("WM_DELETE_WINDOW", self.plotWindowClosed)
         self.plotWindow.title("Edit Plot")
 
         availableCrops = getAvailableCrops()
@@ -106,6 +111,10 @@ class Plot():
 
         selectCropButton = Button(self.plotWindow, text="Add Crop To Plot", command=lambda: self.cropSelected(cropListbox, plantingDateSelector.get_date()))
         selectCropButton.pack(pady=5, padx=(0,5), expand=TRUE, side=LEFT, fill="both")
+
+    def plotWindowClosed(self):
+        self.plotWindow.destroy()
+        self.plotWindow = None
 
     def cropSelected(self, cropListbox, plantingDate):
         try:

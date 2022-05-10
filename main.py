@@ -17,7 +17,8 @@ class Main:
         self.height = 2
         self.width = 3
         self.tileWidth = 64  # The dimensions of the representation of one square foot of land
-        self.configurationWindow = None
+        self.configurationWindow    = None
+        self.scheduleWindow         = None
 
         self.gardenMap = []
         self.initialiseMainWindow()
@@ -78,7 +79,11 @@ class Main:
         self.updateGarden(self.height, self.width)
 
     def showConfigureWindow(self):
+        if self.configurationWindow is not None:
+            return
+
         self.configurationWindow = Toplevel(self.root)
+        self.configurationWindow.protocol("WM_DELETE_WINDOW", self.configClosed)
 
         Label(self.configurationWindow, text="Width").grid(row=0, column=0, sticky=W)
         self.widthEntryBox = Entry(self.configurationWindow)
@@ -95,6 +100,9 @@ class Main:
         Button(self.configurationWindow, text="Map My Garden", command=lambda: self.updateGarden(int(self.heightEntryBox.get()), int(self.widthEntryBox.get()))).grid(row=2, column=0, columnspan=2)
 
     def showScheduleWindow(self):
+        if self.scheduleWindow is not None:
+            return
+
         allPlantedPlots = self.getAllPlantedPlots()
         # If no planted plots, don't show schedule
         if allPlantedPlots is None:
@@ -104,35 +112,36 @@ class Main:
         allPlantedPlots.sort(key=lambda plot:plot.plant.daysTillHarvest)
 
         self.scheduleWindow = Toplevel(self.root)
+        self.scheduleWindow.protocol("WM_DELETE_WINDOW", self.scheduleClosed)
         self.scheduleWindow.title("Schedule")
 
         scheduleTableFrame = Frame(self.scheduleWindow)
         scheduleTableFrame.pack()
 
-        scheduleTable = ttk.Treeview(scheduleTableFrame)
+        self.scheduleTable = ttk.Treeview(scheduleTableFrame)
 
-        scheduleTable['columns'] = ('coords', 'cropName', 'plantDate', 'harvestDate', 'daysSincePlanted', 'daysTillGrown', 'percentGrown')
+        self.scheduleTable['columns'] = ('coords', 'cropName', 'plantDate', 'harvestDate', 'daysSincePlanted', 'daysTillGrown', 'percentGrown')
 
-        scheduleTable.column("#0", width=0, stretch=NO)
-        scheduleTable.column("coords", anchor=CENTER, width=80)
-        scheduleTable.column("cropName", anchor=CENTER, width=80)
-        scheduleTable.column("plantDate", anchor=CENTER, width=80)
-        scheduleTable.column("harvestDate", anchor=CENTER, width=80)
-        scheduleTable.column("daysSincePlanted", anchor=CENTER, width=80)
-        scheduleTable.column("daysTillGrown", anchor=CENTER, width=80)
-        scheduleTable.column("percentGrown", anchor=CENTER, width=100)
+        self.scheduleTable.column("#0", width=0, stretch=NO)
+        self.scheduleTable.column("coords", anchor=CENTER, width=80)
+        self.scheduleTable.column("cropName", anchor=CENTER, width=80)
+        self.scheduleTable.column("plantDate", anchor=CENTER, width=80)
+        self.scheduleTable.column("harvestDate", anchor=CENTER, width=80)
+        self.scheduleTable.column("daysSincePlanted", anchor=CENTER, width=80)
+        self.scheduleTable.column("daysTillGrown", anchor=CENTER, width=80)
+        self.scheduleTable.column("percentGrown", anchor=CENTER, width=100)
 
-        scheduleTable.heading("#0", text="", anchor=CENTER)
-        scheduleTable.heading("coords", text="Co-ords", anchor=CENTER)
-        scheduleTable.heading("cropName", text="Crop", anchor=CENTER)
-        scheduleTable.heading("plantDate", text="Planted Date", anchor=CENTER)
-        scheduleTable.heading("harvestDate", text="Harvest Date", anchor=CENTER)
-        scheduleTable.heading("daysSincePlanted", text="Since Planted", anchor=CENTER)
-        scheduleTable.heading("daysTillGrown", text="Till Harvest", anchor=CENTER)
-        scheduleTable.heading("percentGrown", text="Percent Grown", anchor=CENTER)
+        self.scheduleTable.heading("#0", text="", anchor=CENTER)
+        self.scheduleTable.heading("coords", text="Co-ords", anchor=CENTER)
+        self.scheduleTable.heading("cropName", text="Crop", anchor=CENTER)
+        self.scheduleTable.heading("plantDate", text="Planted Date", anchor=CENTER)
+        self.scheduleTable.heading("harvestDate", text="Harvest Date", anchor=CENTER)
+        self.scheduleTable.heading("daysSincePlanted", text="Since Planted", anchor=CENTER)
+        self.scheduleTable.heading("daysTillGrown", text="Till Harvest", anchor=CENTER)
+        self.scheduleTable.heading("percentGrown", text="Percent Grown", anchor=CENTER)
 
         for plot in allPlantedPlots:
-                scheduleTable.insert(parent='', index='end', text='', values=(
+                self.scheduleTable.insert(parent='', index='end', text='', values=(
                     plot.id,                                # Co-ordinates of the plot [x, y]
                     plot.plant.name,                        # Name
                     plot.plant.plantingDate,                # Date planted on
@@ -142,7 +151,8 @@ class Main:
                     f"{plot.plant.percentGrown}%"           # percent grown
                 ))
 
-        scheduleTable.pack()
+        self.scheduleTable.bind('<<TreeviewSelect>>', self.scheduleSelectedItem)
+        self.scheduleTable.pack()
     # endregion
 
     # region Save and Load
@@ -213,6 +223,26 @@ class Main:
     # endregion
 
     # region Functions
+    def scheduleSelectedItem(self, args):
+        for selectedItem in self.scheduleTable.selection():
+            item = self.scheduleTable.item(selectedItem)
+
+            for plot in self.getAllPlantedPlots():
+                plot.update()
+                if plot.id == item["values"][0]:
+                    plot.canvas.itemconfig(plot.canvasElement, fill=cSelected, outline=cSelected)
+
+    def scheduleClosed(self):
+        for plot in self.getAllPlantedPlots():
+            plot.update()
+        self.scheduleWindow.destroy()
+        self.scheduleWindow = None
+
+    def configClosed(self):
+        self.configurationWindow.destroy()
+        self.configurationWindow = None
+
+
     def generateGardenMap(self):
         for y in range(self.height):
             self.gardenMap.append([])

@@ -7,6 +7,7 @@ cGrass      = "#2c3c1e"
 cLightMud   = "#52402a"
 cMidMud     = "#482f1f"
 cDarkMud    = "#2e2018"
+cSelected   = "#3C3A7A"
 
 #Paths
 saveExportPath      = "garden.json"
