@@ -93,14 +93,9 @@ class Main:
         Button(self.configurationWindow, text="Map My Garden", command=lambda: self.updateGarden(int(self.heightEntryBox.get()), int(self.widthEntryBox.get()))).grid(row=2, column=0, columnspan=2)
 
     def showScheduleWindow(self):
-        allPlantedPlots = []
-        for row in self.gardenMap:
-            for plot in row:
-                if plot.plant is not None:
-                    allPlantedPlots.append(plot)
-
+        allPlantedPlots = self.getAllPlantedPlots()
         # If no planted plots, don't show schedule
-        if allPlantedPlots == []:
+        if allPlantedPlots is None:
             tkinter.messagebox.showinfo("No Planted Plots", "There are no planted plots to display!")
             return
 
@@ -222,6 +217,15 @@ class Main:
                 newPlot = Plot(x, y, self.root, self.tileWidth)
                 newPlot.draw(self.c)
                 self.gardenMap[y].append(newPlot)
+
+    def getAllPlantedPlots(self):
+        allPlantedPlots = []
+        for row in self.gardenMap:
+            for plot in row:
+                if plot.plant is not None:
+                    allPlantedPlots.append(plot)
+        print(allPlantedPlots)
+        return allPlantedPlots if allPlantedPlots != [] else None
 
     def updateGarden(self, height, width):
         if self.gardenMap != []:
