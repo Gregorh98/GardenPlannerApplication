@@ -94,7 +94,7 @@ class Plot():
         # Plant Settings Section
         plantSettingFrame = LabelFrame(self.plotWindow, text="Configure Plant")
 
-        #Planting Date
+        # Planting Date
         Label(plantSettingFrame, text="Planting Date").grid(column=0, row=0)
         plantingDateSelector = DateEntry(plantSettingFrame, width=12, borderwidth=2)
         if self.plant is not None:
@@ -118,7 +118,12 @@ class Plot():
         self.plotWindow.destroy()
 
     def update(self):
-        self.canvas.itemconfig(self.canvasElement, fill=cMidMud, outline=cDarkMud)
+        # If we have a plant and its ready, light soil. Else dark soil
+        if self.plant is not None and self.plant.state == self.plant.growthStates["ready"]:
+            self.canvas.itemconfig(self.canvasElement, fill=cLightMud, outline=cMidMud)
+        else:
+            self.canvas.itemconfig(self.canvasElement, fill=cMidMud, outline=cDarkMud)
+
         if self.plotText is not None:
             self.canvas.itemconfigure(self.plotText, text=self.getNewPlotText())
         else:
