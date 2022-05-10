@@ -93,6 +93,19 @@ class Main:
         Button(self.configurationWindow, text="Map My Garden", command=lambda: self.updateGarden(int(self.heightEntryBox.get()), int(self.widthEntryBox.get()))).grid(row=2, column=0, columnspan=2)
 
     def showScheduleWindow(self):
+        allPlantedPlots = []
+        for row in self.gardenMap:
+            for plot in row:
+                if plot.plant is not None:
+                    allPlantedPlots.append(plot)
+
+        # If no planted plots, don't show schedule
+        if allPlantedPlots == []:
+            tkinter.messagebox.showinfo("No Planted Plots", "There are no planted plots to display!")
+            return
+
+        allPlantedPlots.sort(key=lambda plot:plot.plant.daysTillHarvest)
+
         self.scheduleWindow = Toplevel(self.root)
         self.scheduleWindow.title("Schedule")
 
@@ -121,8 +134,7 @@ class Main:
         scheduleTable.heading("daysTillGrown", text="Till Harvest", anchor=CENTER)
         scheduleTable.heading("percentGrown", text="Percent Grown", anchor=CENTER)
 
-        for row in self.gardenMap:
-            for plot in row:
+        for plot in allPlantedPlots:
                 scheduleTable.insert(parent='', index='end', text='', values=(
                     plot.id,                                # Co-ordinates of the plot [x, y]
                     plot.plant.name,                        # Name
