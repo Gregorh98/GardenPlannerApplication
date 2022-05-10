@@ -56,10 +56,13 @@ class Plot:
     def eventRemoveCrop(self, args):
         self.plant = None
 
-        self.canvas.delete(self.plotText)
-        self.plotText = None
-
-        self.canvas.itemconfig(self.canvasElement, fill=cLightMud, outline=cMidMud)
+        if graphicalUI:
+            self.canvasImage = PhotoImage(file='sprites/plot/plot0.png')
+            self.canvas.itemconfig(self.canvasElement, image=self.canvasImage)
+        else:
+            self.canvas.delete(self.plotText)
+            self.plotText = None
+            self.canvas.itemconfig(self.canvasElement, fill=cLightMud, outline=cMidMud)
 
     def getNewPlotText(self):
         if self.plant.state == self.plant.growthStates["planned"] or self.plant.state == self.plant.growthStates["ready"]:
@@ -136,22 +139,17 @@ class Plot:
             if self.plant is not None:
                 if self.plant.percentGrown == 0:
                     self.canvasImage = PhotoImage(file='sprites/plot/plot0.png')
-                    self.canvasElement = self.canvas.create_image(self.xOnGrid, self.yOnGrid, image=self.canvasImage, anchor=NW)
                 elif 0 < self.plant.percentGrown < 25:
                     self.canvasImage = PhotoImage(file='sprites/plot/plot1.png')
-                    self.canvasElement = self.canvas.create_image(self.xOnGrid, self.yOnGrid, image=self.canvasImage, anchor=NW)
                 elif 25 <= self.plant.percentGrown < 50:
                     self.canvasImage = PhotoImage(file='sprites/plot/plot2.png')
-                    self.canvasElement = self.canvas.create_image(self.xOnGrid, self.yOnGrid, image=self.canvasImage, anchor=NW)
                 elif 50 <= self.plant.percentGrown < 75:
                     self.canvasImage = PhotoImage(file='sprites/plot/plot3.png')
-                    self.canvasElement = self.canvas.create_image(self.xOnGrid, self.yOnGrid, image=self.canvasImage, anchor=NW)
                 elif 75 <= self.plant.percentGrown < 100:
                     self.canvasImage = PhotoImage(file='sprites/plot/plot4.png')
-                    self.canvasElement = self.canvas.create_image(self.xOnGrid, self.yOnGrid, image=self.canvasImage, anchor=NW)
                 elif self.plant.percentGrown >= 100:
                     self.canvasImage = PhotoImage(file='sprites/plot/plot5.png')
-                    self.canvasElement = self.canvas.create_image(self.xOnGrid, self.yOnGrid, image=self.canvasImage, anchor=NW)
+                self.canvas.itemconfig(self.canvasElement, image=self.canvasImage)
         else:
             # If we have a plant and its ready, light soil. Else dark soil
             if self.plant is not None and self.plant.state == self.plant.growthStates["ready"]:
