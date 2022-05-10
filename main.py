@@ -210,6 +210,7 @@ class Main:
                     self.gardenMap[plot.y][plot.x].update()
     # endregion
 
+    # region Functions
     def generateGardenMap(self):
         for y in range(self.height):
             self.gardenMap.append([])
@@ -254,6 +255,8 @@ class Main:
                          width=((2 * self.tileWidth) + self.width * self.tileWidth))
         if self.configurationWindow is not None:
             self.configurationWindow.destroy()
+    # endregion
+
 
 A = Main()
 A.root.mainloop()
