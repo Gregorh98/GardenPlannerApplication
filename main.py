@@ -230,7 +230,7 @@ class Main:
             for plot in self.getAllPlantedPlots():
                 plot.update()
                 if plot.id == item["values"][0]:
-                    plot.canvas.itemconfig(plot.canvasElement, fill=cSelected, outline=cSelected)
+                    plot.canvas.itemconfig(plot.canvasElement, fill=cSelected, outline=cDarkMud)
 
     def scheduleClosed(self):
         for plot in self.getAllPlantedPlots():
