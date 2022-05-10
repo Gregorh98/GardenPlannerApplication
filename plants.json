@@ -62,7 +62,7 @@
   "pumpkin": {
     "name": "Pumpkin",
     "variety": "Charmant PMR-F1",
-    "numberPerSquareFoot": 1,
+    "numberPerSquareFoot": 0.25,
     "growTime": 110
   }
 }

@@ -43,7 +43,7 @@ class Main:
 
         row += 1
 
-        Label(sideFrame, text=datetime.date.today(), relief=SUNKEN).grid(row=row, column=0, padx=2, pady=1, sticky=EW)
+        Label(sideFrame, text=str(datetime.date.today()), relief=SUNKEN).grid(row=row, column=0, padx=2, pady=1, sticky=EW)
 
         row += 1
 
@@ -109,7 +109,7 @@ class Main:
             tkinter.messagebox.showinfo("No Planted Plots", "There are no planted plots to display!")
             return
 
-        allPlantedPlots.sort(key=lambda plot:plot.plant.daysTillHarvest)
+        allPlantedPlots.sort(key=lambda plantedPlot: plantedPlot.plant.daysTillHarvest)
 
         self.scheduleWindow = Toplevel(self.root)
         self.scheduleWindow.protocol("WM_DELETE_WINDOW", self.scheduleClosed)
@@ -141,17 +141,17 @@ class Main:
         self.scheduleTable.heading("percentGrown", text="Percent Grown", anchor=CENTER)
 
         for plot in allPlantedPlots:
-                self.scheduleTable.insert(parent='', index='end', text='', values=(
-                    plot.id,                                # Co-ordinates of the plot [x, y]
-                    plot.plant.name,                        # Name
-                    plot.plant.plantingDate,                # Date planted on
-                    plot.plant.harvestDate,                 # Date to harvest on
-                    f"{plot.plant.daysSincePlanted} days",  # number of days since planted
-                    f"{plot.plant.daysTillHarvest} days",   # number of days till harvest
-                    f"{plot.plant.percentGrown}%"           # percent grown
-                ))
+            self.scheduleTable.insert(parent='', index='end', text='', values=(
+                plot.id,                                # Co-ordinates of the plot [x, y]
+                plot.plant.name,                        # Name
+                plot.plant.plantingDate,                # Date planted on
+                plot.plant.harvestDate,                 # Date to harvest on
+                f"{plot.plant.daysSincePlanted} days",  # number of days since planted
+                f"{plot.plant.daysTillHarvest} days",   # number of days till harvest
+                f"{plot.plant.percentGrown}%"           # percent grown
+            ))
 
-        self.scheduleTable.bind('<<TreeviewSelect>>', self.scheduleSelectedItem)
+        self.scheduleTable.bind('<<TreeviewSelect>>', self.eventScheduleSelectedItem)
         self.scheduleTable.pack()
     # endregion
 
@@ -171,13 +171,12 @@ class Main:
                                                            "There is an existing save. Are you sure you want to overwrite?")
 
         if overwriteWarning:
-            save = {}
-            # General settings
-            save["general"] = {
-                "tileWidth":    self.tileWidth,
-                "gardenWidth":  self.width,
+            save = {"general": {
+                "tileWidth": self.tileWidth,
+                "gardenWidth": self.width,
                 "gardenHeight": self.height
-            }
+            }}
+            # General settings
 
             # Plot Settings
             for row in self.gardenMap:
@@ -212,18 +211,18 @@ class Main:
         # Update height and width
         height = jsonDump["general"]["gardenHeight"]
         width = jsonDump["general"]["gardenWidth"]
-        self.updateGarden(height, width)
-        for row in self.gardenMap:
-            for plot in row:
-                #Update plant in plot
-                plotPlant = jsonDump[f"[{plot.x}, {plot.y}]"]["plant"]
-                if plotPlant is not None:
-                    self.gardenMap[plot.y][plot.x].plant = Plant(plotPlant["name"], plotPlant["id"], datetime.date.fromisoformat(plotPlant["plantingDate"]))
-                    self.gardenMap[plot.y][plot.x].update()
+        if self.updateGarden(height, width) is not False:
+            for row in self.gardenMap:
+                for plot in row:
+                    # Update plant in plot
+                    plotPlant = jsonDump[f"[{plot.x}, {plot.y}]"]["plant"]
+                    if plotPlant is not None:
+                        self.gardenMap[plot.y][plot.x].plant = Plant(plotPlant["name"], plotPlant["id"], datetime.date.fromisoformat(plotPlant["plantingDate"]))
+                        self.gardenMap[plot.y][plot.x].update()
     # endregion
 
     # region Functions
-    def scheduleSelectedItem(self, args):
+    def eventScheduleSelectedItem(self, args):
         for selectedItem in self.scheduleTable.selection():
             item = self.scheduleTable.item(selectedItem)
 
@@ -242,7 +241,6 @@ class Main:
         self.configurationWindow.destroy()
         self.configurationWindow = None
 
-
     def generateGardenMap(self):
         for y in range(self.height):
             self.gardenMap.append([])
@@ -260,14 +258,17 @@ class Main:
         return allPlantedPlots if allPlantedPlots != [] else None
 
     def updateGarden(self, height, width):
+        if self.configurationWindow is not None:
+            self.configClosed()
+
         if self.gardenMap != []:
             overwriteConfirm = tkinter.messagebox.askyesno(title="Overwrite Warning",
                                                            message="This will overwrite the current plot. Do you wish to continue?")
-            if overwriteConfirm == False:
+            if overwriteConfirm is False:
                 if self.configurationWindow is not None:
                     self.configurationWindow.destroy()
                 tkinter.messagebox.showinfo(title="Overwrite Aborted", message="Configuration update cancelled")
-                return
+                return False
 
         self.height = height
         self.width = width
@@ -286,6 +287,7 @@ class Main:
                          width=((2 * self.tileWidth) + self.width * self.tileWidth))
         if self.configurationWindow is not None:
             self.configurationWindow.destroy()
+        return True
     # endregion
 
 

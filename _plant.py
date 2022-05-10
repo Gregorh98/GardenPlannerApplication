@@ -2,20 +2,21 @@ import math
 import datetime
 import json
 
-class Plant():
-    def __init__(self, name, id, plantingDate):
+
+class Plant:
+    def __init__(self, name, _id, plantingDate):
         self.growthStates    = {"planned":  "Planned",
                                 "growing":  "Growing",
                                 "ready":    "Ready"}
         self.name           = name
-        self.id             = id
+        self.id             = _id
         self.plantingDate   = plantingDate
         self.state          = self.growthStates["planned"]
 
         jsonInfo = self.getAdditionalInfo()
         self.quantity = jsonInfo["numberPerSquareFoot"]
         self.growTime = jsonInfo["growTime"]
-        self.displayName = jsonInfo["name"] if ("\n" in jsonInfo["name"] or len(jsonInfo["name"])<8) else jsonInfo["name"][0:7]+"..."
+        self.displayName = jsonInfo["name"] if ("\n" in jsonInfo["name"] or len(jsonInfo["name"]) < 8) else jsonInfo["name"][0:7]+"..."
 
         self.update()
 

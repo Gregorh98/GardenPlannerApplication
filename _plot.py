@@ -17,7 +17,7 @@ def getAvailableCrops():
     return availableCrops
 
 
-class Plot():
+class Plot:
     def __init__(self, x, y, root, tileWidth):
         self.x = x
         self.y = y
@@ -47,6 +47,7 @@ class Plot():
         self.canvas.tag_bind(self.canvasElement, "<Button-3>", self.eventRemoveCrop)
 
     def eventAddEditCrop(self, args):
+        self.plotWindowClosed()
         self.showEditPlotWindow()
 
     def eventRemoveCrop(self, args):
@@ -82,7 +83,7 @@ class Plot():
         cropListbox = Listbox(listFrame, height=6)
         for x in availableCrops:
             cropListbox.insert(END, x)
-        cropListbox.pack(side=LEFT, fill="y", padx=2, pady=(0,5))
+        cropListbox.pack(side=LEFT, fill="y", padx=2, pady=(0, 5))
         if self.plant is not None:
             cropListbox.select_set(self.plant.id)
         else:
@@ -90,7 +91,7 @@ class Plot():
 
         scrollbar = Scrollbar(listFrame, orient="vertical")
         scrollbar.config(command=cropListbox.yview)
-        scrollbar.pack(side="right", fill="y", pady=(0,5))
+        scrollbar.pack(side="right", fill="y", pady=(0, 5))
 
         cropListbox.config(yscrollcommand=scrollbar.set)
 
@@ -107,14 +108,15 @@ class Plot():
 
         plantingDateSelector.grid(column=1, row=0, padx=2, pady=(2, 0))
 
-        plantSettingFrame.pack(pady=(5,0), padx=(0,5), expand=TRUE, fill="both")
+        plantSettingFrame.pack(pady=(5, 0), padx=(0, 5), expand=TRUE, fill="both")
 
         selectCropButton = Button(self.plotWindow, text="Add Crop To Plot", command=lambda: self.cropSelected(cropListbox, plantingDateSelector.get_date()))
-        selectCropButton.pack(pady=5, padx=(0,5), expand=TRUE, side=LEFT, fill="both")
+        selectCropButton.pack(pady=5, padx=(0, 5), expand=TRUE, side=LEFT, fill="both")
 
     def plotWindowClosed(self):
-        self.plotWindow.destroy()
-        self.plotWindow = None
+        if self.plotWindow is not None:
+            self.plotWindow.destroy()
+            self.plotWindow = None
 
     def cropSelected(self, cropListbox, plantingDate):
         try:
