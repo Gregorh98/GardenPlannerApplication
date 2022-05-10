@@ -172,8 +172,12 @@ class Main:
             tkinter.messagebox.showinfo("Save cancelled", "Save cancelled!")
 
     def loadGarden(self):
-        with open(saveExportPath, "r") as f:
-            jsonDump = json.loads(f.read())
+        try:
+            with open(saveExportPath, "r") as f:
+                jsonDump = json.loads(f.read())
+        except FileNotFoundError:
+            tkinter.messagebox.showerror("Error", "No Save Found")
+            return
         # Update height and width
         height = jsonDump["general"]["gardenHeight"]
         width = jsonDump["general"]["gardenWidth"]
