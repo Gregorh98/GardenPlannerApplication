@@ -17,6 +17,9 @@ class Main:
         self.height = 2
         self.width = 3
         self.tileWidth = 64  # The dimensions of the representation of one square foot of land
+        self.canvasWidth = lambda:  (2 * self.tileWidth) + (self.tileWidth * self.width)
+        self.canvasHeight = lambda: (2 * self.tileWidth) + (self.tileWidth * self.height)
+
         self.configurationWindow    = None
         self.scheduleWindow         = None
 
@@ -31,8 +34,9 @@ class Main:
 
     # region Windows
     def initialiseMainWindow(self):
-        self.c = Canvas(self.root, background=cGrass, height=((2 * self.tileWidth) + self.height * self.tileWidth),
+        self.c = Canvas(self.root, height=((2 * self.tileWidth) + self.height * self.tileWidth),
                         width=((2 * self.tileWidth) + self.width * self.tileWidth))
+
         self.c.grid(row=0, column=0)
 
         sideFrame = Frame(self.root)
@@ -277,6 +281,11 @@ class Main:
 
         self.c.delete("all")
 
+        self.root.grass = PhotoImage(file='sprites/grass.png')
+        for y in range(0, self.canvasHeight(), 64):
+            for x in range(0, self.canvasWidth(), 64):
+                self.c.create_image(x, y, image=self.root.grass, anchor=NW)
+
         self.c.create_rectangle(self.tileWidth - (self.tileWidth / 8), self.tileWidth - (self.tileWidth / 8),
                                 (self.tileWidth * self.width) + self.tileWidth + (self.tileWidth / 8),
                                 (self.tileWidth * self.height) + self.tileWidth + (self.tileWidth / 8), fill=cWood)
@@ -285,11 +294,19 @@ class Main:
 
         self.c.configure(height=((2 * self.tileWidth) + self.height * self.tileWidth),
                          width=((2 * self.tileWidth) + self.width * self.tileWidth))
+
         if self.configurationWindow is not None:
             self.configurationWindow.destroy()
+
         return True
+
+    def gameLoop(self):
+        while True:
+            self.root.update()
+            self.root.update_idletasks()
     # endregion
 
 
 A = Main()
-A.root.mainloop()
+A.gameLoop()
+

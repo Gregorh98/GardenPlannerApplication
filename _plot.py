@@ -6,7 +6,6 @@ from _plant import Plant
 from tkinter import *
 import tkinter.messagebox
 
-
 def getAvailableCrops():
     with open("plants.json", "r") as f:
         cropsList = json.loads(f.read())
@@ -15,7 +14,6 @@ def getAvailableCrops():
             availableCrops.append(key.title())
 
     return availableCrops
-
 
 class Plot:
     def __init__(self, x, y, root, tileWidth):
@@ -39,10 +37,15 @@ class Plot:
 
     def draw(self, canvas):
         self.canvas = canvas
-        self.canvasElement = canvas.create_rectangle(self.tileWidth + self.x * self.tileWidth, self.tileWidth + self.y * self.tileWidth,
+        if graphicalUI:
+            self.canvasImage = PhotoImage(file='sprites/plot/plot0.png')
+            self.canvasElement = self.canvas.create_image(self.xOnGrid, self.yOnGrid, image=self.canvasImage, anchor=NW)
+        else:
+            self.canvasElement = canvas.create_rectangle(self.tileWidth + self.x * self.tileWidth, self.tileWidth + self.y * self.tileWidth,
                                                      self.tileWidth + self.x * self.tileWidth + self.tileWidth,
                                                      self.tileWidth + self.y * self.tileWidth + self.tileWidth, fill=cLightMud,
                                                      outline=cMidMud)
+
         self.canvas.tag_bind(self.canvasElement, "<Button-1>", self.eventAddEditCrop)
         self.canvas.tag_bind(self.canvasElement, "<Button-3>", self.eventRemoveCrop)
 
@@ -129,14 +132,35 @@ class Plot:
         self.plotWindow.destroy()
 
     def update(self):
-        # If we have a plant and its ready, light soil. Else dark soil
-        if self.plant is not None and self.plant.state == self.plant.growthStates["ready"]:
-            self.canvas.itemconfig(self.canvasElement, fill=cLightMud, outline=cMidMud)
+        if graphicalUI:
+            if self.plant is not None:
+                if self.plant.percentGrown == 0:
+                    self.canvasImage = PhotoImage(file='sprites/plot/plot0.png')
+                    self.canvasElement = self.canvas.create_image(self.xOnGrid, self.yOnGrid, image=self.canvasImage, anchor=NW)
+                elif 0 < self.plant.percentGrown < 25:
+                    self.canvasImage = PhotoImage(file='sprites/plot/plot1.png')
+                    self.canvasElement = self.canvas.create_image(self.xOnGrid, self.yOnGrid, image=self.canvasImage, anchor=NW)
+                elif 25 <= self.plant.percentGrown < 50:
+                    self.canvasImage = PhotoImage(file='sprites/plot/plot2.png')
+                    self.canvasElement = self.canvas.create_image(self.xOnGrid, self.yOnGrid, image=self.canvasImage, anchor=NW)
+                elif 50 <= self.plant.percentGrown < 75:
+                    self.canvasImage = PhotoImage(file='sprites/plot/plot3.png')
+                    self.canvasElement = self.canvas.create_image(self.xOnGrid, self.yOnGrid, image=self.canvasImage, anchor=NW)
+                elif 75 <= self.plant.percentGrown < 100:
+                    self.canvasImage = PhotoImage(file='sprites/plot/plot4.png')
+                    self.canvasElement = self.canvas.create_image(self.xOnGrid, self.yOnGrid, image=self.canvasImage, anchor=NW)
+                elif self.plant.percentGrown >= 100:
+                    self.canvasImage = PhotoImage(file='sprites/plot/plot5.png')
+                    self.canvasElement = self.canvas.create_image(self.xOnGrid, self.yOnGrid, image=self.canvasImage, anchor=NW)
         else:
-            self.canvas.itemconfig(self.canvasElement, fill=cMidMud, outline=cDarkMud)
+            # If we have a plant and its ready, light soil. Else dark soil
+            if self.plant is not None and self.plant.state == self.plant.growthStates["ready"]:
+                self.canvas.itemconfig(self.canvasElement, fill=cLightMud, outline=cMidMud)
+            else:
+                self.canvas.itemconfig(self.canvasElement, fill=cMidMud, outline=cDarkMud)
 
-        if self.plotText is not None:
-            self.canvas.itemconfigure(self.plotText, text=self.getNewPlotText())
-        else:
-            self.plotText = self.canvas.create_text(self.xCenterCell, self.yCenterCell, fill="white",
-                                                    text=self.getNewPlotText(), justify=CENTER)
+            if self.plotText is not None:
+                self.canvas.itemconfigure(self.plotText, text=self.getNewPlotText())
+            else:
+                self.plotText = self.canvas.create_text(self.xCenterCell, self.yCenterCell, fill="white",
+                                                        text=self.getNewPlotText(), justify=CENTER)

@@ -1,5 +1,5 @@
 # Variables
-versionNumber   = "0.0.1"
+versionNumber   = "1.0.0"
 
 # Resources
 cWood       = "#bca464"
@@ -16,3 +16,6 @@ imageExportPath     = "garden.png"
 # Labels
 title               = f"Square Foot Garden Planner"
 titleVersionNumber  = f"{title} v{versionNumber}"
+
+# Settings
+graphicalUI = True
