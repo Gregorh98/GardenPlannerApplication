@@ -82,12 +82,14 @@ class Main:
 
         Label(self.configurationWindow, text="Width").grid(row=0, column=0, sticky=W)
         self.widthEntryBox = Entry(self.configurationWindow)
+        self.widthEntryBox.insert(0, self.width)
         self.widthEntryBox.grid(row=0, column=1)
 
         self.widthEntryBox.focus_set()
 
         Label(self.configurationWindow, text="Height").grid(row=1, column=0, sticky=W)
         self.heightEntryBox = Entry(self.configurationWindow)
+        self.heightEntryBox.insert(0, self.height)
         self.heightEntryBox.grid(row=1, column=1)
 
         Button(self.configurationWindow, text="Map My Garden", command=lambda: self.updateGarden(int(self.heightEntryBox.get()), int(self.widthEntryBox.get()))).grid(row=2, column=0, columnspan=2)
