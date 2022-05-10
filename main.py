@@ -13,7 +13,7 @@ from _resources import *
 class Main:
     def __init__(self):
         self.root = Tk()
-        self.root.title("Square Foot Garden Planner")
+        self.root.title(title)
         self.height = 2
         self.width = 3
         self.tileWidth = 64  # The dimensions of the representation of one square foot of land
@@ -34,34 +34,46 @@ class Main:
                         width=((2 * self.tileWidth) + self.width * self.tileWidth))
         self.c.grid(row=0, column=0)
 
-        buttonFrame = Frame(self.root)
+        sideFrame = Frame(self.root)
 
         row = 0
 
-        configButton = Button(buttonFrame, text="Configure\nPlot Size", command=self.showConfigureWindow)
+        Label(sideFrame, text=titleVersionNumber, wraplength=100).grid(row=row, column=0, padx=2, pady=1, sticky=EW)
+
+        row += 1
+
+        Label(sideFrame, text=datetime.date.today(), relief=SUNKEN).grid(row=row, column=0, padx=2, pady=1, sticky=EW)
+
+        row += 1
+
+        ttk.Separator(sideFrame, orient=HORIZONTAL).grid(row=row, column=0, padx=2, pady=4, sticky=EW)
+
+        row += 1
+
+        configButton = Button(sideFrame, text="Configure", command=self.showConfigureWindow)
         configButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
 
-        row = 1
+        row += 1
 
-        scheduleButton = Button(buttonFrame, text="View Schedule", command=self.showScheduleWindow)
+        scheduleButton = Button(sideFrame, text="View Schedule", command=self.showScheduleWindow)
         scheduleButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
 
-        row = 2
+        row += 1
 
-        saveButton = Button(buttonFrame, text="Save Garden", command=self.saveGarden)
+        saveButton = Button(sideFrame, text="Save Garden", command=self.saveGarden)
         saveButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
 
-        row = 3
+        row += 1
 
-        loadButton = Button(buttonFrame, text="Load Garden", command=self.loadGarden)
+        loadButton = Button(sideFrame, text="Load Garden", command=self.loadGarden)
         loadButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
 
-        row = 4
+        row += 1
 
-        saveImageButton = Button(buttonFrame, text="Save Image", command=self.saveImage)
+        saveImageButton = Button(sideFrame, text="Save Image", command=self.saveImage)
         saveImageButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
 
-        buttonFrame.grid(row=0, column=1, sticky=N)
+        sideFrame.grid(row=0, column=1, sticky=N)
 
         self.updateGarden(self.height, self.width)
 
