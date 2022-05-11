@@ -20,6 +20,7 @@ class Main:
         self.canvasWidth = lambda:  (2 * self.tileWidth) + (self.tileWidth * self.width)
         self.canvasHeight = lambda: (2 * self.tileWidth) + (self.tileWidth * self.height)
 
+        self.highlightSquare        = None
         self.configurationWindow    = None
         self.scheduleWindow         = None
 
@@ -81,6 +82,7 @@ class Main:
         sideFrame.grid(row=0, column=1, sticky=N)
 
         self.updateGarden(self.height, self.width)
+
 
     def showConfigureWindow(self):
         if self.configurationWindow is not None:
@@ -233,7 +235,18 @@ class Main:
             for plot in self.getAllPlantedPlots():
                 plot.update()
                 if plot.id == item["values"][0]:
-                    plot.canvas.itemconfig(plot.canvasElement, fill=cSelected, outline=cDarkMud)
+                    if self.highlightSquare is not None:
+                        self.c.delete(self.highlightSquare)
+                    outlineWidth = 4
+                    self.highlightSquare = self.c.create_rectangle(
+                        (self.tileWidth + (plot.x * self.tileWidth))+(outlineWidth/2),
+                        (self.tileWidth + (plot.y * self.tileWidth))+(outlineWidth/2),
+                        (self.tileWidth + (plot.x * self.tileWidth) + self.tileWidth)-(outlineWidth/2),
+                         (self.tileWidth + (plot.y * self.tileWidth) + self.tileWidth)-(outlineWidth/2),
+                        fill="",
+                        outline=cSelected,
+                        width=outlineWidth
+                    )
 
     def scheduleClosed(self):
         for plot in self.getAllPlantedPlots():
@@ -281,10 +294,13 @@ class Main:
 
         self.c.delete("all")
 
-        self.root.grass = PhotoImage(file='sprites/grass.png')
-        for y in range(0, self.canvasHeight(), 64):
-            for x in range(0, self.canvasWidth(), 64):
-                self.c.create_image(x, y, image=self.root.grass, anchor=NW)
+        if graphicalUI:
+            self.root.grass = PhotoImage(file='sprites/grass.png')
+            for y in range(0, self.canvasHeight(), 64):
+                for x in range(0, self.canvasWidth(), 64):
+                    self.c.create_image(x, y, image=self.root.grass, anchor=NW)
+        else:
+            self.c.configure(background=cGrass)
 
         self.c.create_rectangle(self.tileWidth - (self.tileWidth / 8), self.tileWidth - (self.tileWidth / 8),
                                 (self.tileWidth * self.width) + self.tileWidth + (self.tileWidth / 8),

@@ -23,7 +23,7 @@
     "numberPerSquareFoot": 1,
     "growTime": 70
   },
-  "carrots": {
+  "carrot": {
     "name": "Carrots",
     "variety": "Autumn King",
     "numberPerSquareFoot": 16,

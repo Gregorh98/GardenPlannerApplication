@@ -18,4 +18,4 @@ title               = f"Square Foot Garden Planner"
 titleVersionNumber  = f"{title} v{versionNumber}"
 
 # Settings
-graphicalUI = True
+graphicalUI = False
