@@ -223,7 +223,7 @@ class Main:
                     # Update plant in plot
                     plotPlant = jsonDump[f"[{plot.x}, {plot.y}]"]["plant"]
                     if plotPlant is not None:
-                        self.gardenMap[plot.y][plot.x].plant = Plant(plotPlant["name"], plotPlant["id"], datetime.date.fromisoformat(plotPlant["plantingDate"]))
+                        self.gardenMap[plot.y][plot.x].plant = Plant(plotPlant["name"], plotPlant["id"], datetime.date.fromisoformat(plotPlant["plantingDate"]), self.tileWidth)
                         self.gardenMap[plot.y][plot.x].update()
     # endregion
 

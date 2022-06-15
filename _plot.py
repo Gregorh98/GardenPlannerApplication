@@ -6,6 +6,7 @@ from _plant import Plant
 from tkinter import *
 import tkinter.messagebox
 
+
 def getAvailableCrops():
     with open("plants.json", "r") as f:
         cropsList = json.loads(f.read())
@@ -15,16 +16,17 @@ def getAvailableCrops():
 
     return availableCrops
 
+
 class Plot:
     def __init__(self, x, y, root, tileWidth):
         self.x = x
         self.y = y
-        self.xOnGrid = tileWidth+(x*tileWidth)
+        self.xOnGrid = tileWidth + (x * tileWidth)
         self.yOnGrid = tileWidth + (y * tileWidth)
 
         self.tileWidth = tileWidth
 
-        self.xCenterCell = self.xOnGrid + (self.tileWidth/2)
+        self.xCenterCell = self.xOnGrid + (self.tileWidth / 2)
         self.yCenterCell = self.yOnGrid + (self.tileWidth / 2)
 
         self.id = str([x, y])
@@ -32,8 +34,8 @@ class Plot:
         self.rootWindow = root
         self.plotWindow = None
 
-        self.plotText   = None
-        self.plant      = None
+        self.plotText = None
+        self.plant = None
 
     def draw(self, canvas):
         self.canvas = canvas
@@ -41,10 +43,12 @@ class Plot:
             self.canvasImage = PhotoImage(file='sprites/plot/plot0.png')
             self.canvasElement = self.canvas.create_image(self.xOnGrid, self.yOnGrid, image=self.canvasImage, anchor=NW)
         else:
-            self.canvasElement = canvas.create_rectangle(self.tileWidth + self.x * self.tileWidth, self.tileWidth + self.y * self.tileWidth,
-                                                     self.tileWidth + self.x * self.tileWidth + self.tileWidth,
-                                                     self.tileWidth + self.y * self.tileWidth + self.tileWidth, fill=cLightMud,
-                                                     outline=cMidMud)
+            self.canvasElement = canvas.create_rectangle(self.tileWidth + self.x * self.tileWidth,
+                                                         self.tileWidth + self.y * self.tileWidth,
+                                                         self.tileWidth + self.x * self.tileWidth + self.tileWidth,
+                                                         self.tileWidth + self.y * self.tileWidth + self.tileWidth,
+                                                         fill=cLightMud,
+                                                         outline=cMidMud)
 
         self.canvas.tag_bind(self.canvasElement, "<Button-1>", self.eventAddEditCrop)
         self.canvas.tag_bind(self.canvasElement, "<Button-3>", self.eventRemoveCrop)
@@ -65,7 +69,8 @@ class Plot:
             self.canvas.itemconfig(self.canvasElement, fill=cLightMud, outline=cMidMud)
 
     def getNewPlotText(self):
-        if self.plant.state == self.plant.growthStates["planned"] or self.plant.state == self.plant.growthStates["ready"]:
+        if self.plant.state == self.plant.growthStates["planned"] or self.plant.state == self.plant.growthStates[
+            "ready"]:
             return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.state})"
         else:
             return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.percentGrown}%)"
@@ -116,7 +121,8 @@ class Plot:
 
         plantSettingFrame.pack(pady=(5, 0), padx=(0, 5), expand=TRUE, fill="both")
 
-        selectCropButton = Button(self.plotWindow, text="Add Crop To Plot", command=lambda: self.cropSelected(cropListbox, plantingDateSelector.get_date()))
+        selectCropButton = Button(self.plotWindow, text="Add Crop To Plot",
+                                  command=lambda: self.cropSelected(cropListbox, plantingDateSelector.get_date()))
         selectCropButton.pack(pady=5, padx=(0, 5), expand=TRUE, side=LEFT, fill="both")
 
     def plotWindowClosed(self):
