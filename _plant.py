@@ -29,8 +29,9 @@ class Plant:
     def update(self):
         self.harvestDate = self.plantingDate + datetime.timedelta(days=self.growTime)
         # noinspection PyTypeChecker
-        self.daysTillHarvest = (self.harvestDate - datetime.date.today()).days
-        self.daysSincePlanted = (datetime.date.today() - self.plantingDate).days
+        self.daysTillPlanting   = (self.plantingDate - datetime.date.today()).days
+        self.daysTillHarvest    = (self.harvestDate - datetime.date.today()).days
+        self.daysSincePlanted   = (datetime.date.today() - self.plantingDate).days
 
         # max percent grown is 100
         percentGrown = math.ceil((self.daysSincePlanted / self.growTime) * 100)
