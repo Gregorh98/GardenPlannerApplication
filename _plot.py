@@ -132,7 +132,7 @@ class Plot:
 
     def cropSelected(self, cropListbox, plantingDate):
         try:
-            self.plant = Plant(cropListbox.get(cropListbox.curselection()), cropListbox.curselection()[0], plantingDate)
+            self.plant = Plant(cropListbox.get(cropListbox.curselection()), cropListbox.curselection()[0], plantingDate, self.tileWidth)
         except _tkinter.TclError:
             tkinter.messagebox.showerror("Error", "Please select a crop to plant")
             return
