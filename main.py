@@ -146,8 +146,8 @@ class Main:
         self.scheduleTable.heading("daysTillGrown", text="Till Harvest", anchor=CENTER)
         self.scheduleTable.heading("percentGrown", text="Percent Grown", anchor=CENTER)
 
-        for plot in allPlantedPlots:
-            self.scheduleTable.insert(parent='', index='end', text='', values=(
+        for id, plot in enumerate(allPlantedPlots):
+            self.scheduleTable.insert(parent='', index='end', text='', iid=id, values=(
                 plot.id,                                # Co-ordinates of the plot [x, y]
                 plot.plant.name,                        # Name
                 plot.plant.plantingDate,                # Date planted on
@@ -158,6 +158,7 @@ class Main:
             ))
 
         self.scheduleTable.bind('<<TreeviewSelect>>', self.eventScheduleSelectedItem)
+        self.scheduleTable.selection_set(0)
         self.scheduleTable.pack()
     # endregion
 
@@ -251,6 +252,7 @@ class Main:
     def scheduleClosed(self):
         for plot in self.getAllPlantedPlots():
             plot.update()
+        self.c.delete(self.highlightSquare)
         self.scheduleWindow.destroy()
         self.scheduleWindow = None
 
