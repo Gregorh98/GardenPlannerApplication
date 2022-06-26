@@ -11,7 +11,10 @@ This will run in the background and provide updates via email in relation to you
 """
 import datetime
 import json
+import smtplib
+from email.mime.text import MIMEText
 from os.path import exists
+
 
 from _plant import Plant
 from _resources import saveExportPath
@@ -23,20 +26,35 @@ class NotificationService:
             print("No save file located. Please save a garden before running the notification service")
         else:
             self.plants = self.getAllPlants()
-            print(self.plants)
             print(self.writeWeeklySummary()["message"])
+            self.sendEmail(self.writeWeeklySummary())
 
     # region Email Functions
-    def initiateEmailService(self):
-        return
+    def sendEmail(self, messageDetails):
+        sender = "gregor.hastings@outlook.com"
+        recipient = sender
 
-    def sendEmail(self, message):
-        return
+        msg = MIMEText(messageDetails["message"])
+        msg['Subject'] = messageDetails["subject"]
+        msg['From'] = sender
+        msg['To'] = recipient
+
+        mailserver = smtplib.SMTP('smtp.office365.com', 587)
+        mailserver.ehlo()
+        mailserver.starttls()
+        mailserver.ehlo()
+        #TODO Hide API Code
+        mailserver.login(sender, 'lG4M#@0WTB&y')
+
+        mailserver.sendmail(sender, recipient, msg.as_string())
+        mailserver.quit()
+
     # endregion
 
     # region Email Writers
     def writeWeeklySummary(self):
         subject = "Square Foot Garden - Weekly Summary"
+
         message = "Weekly summary for week beginning 01/01/2022\n"
         for plant in self.getAllPlants():
             if plant.state == plant.growthStates["planned"]:
