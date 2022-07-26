@@ -60,6 +60,11 @@ class Main:
 
         row += 1
 
+        editPlantListButton = Button(sideFrame, text="Edit Plant List", command=self.showEditPlantListWindow, state=DISABLED)
+        editPlantListButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
+
+        row += 1
+
         scheduleButton = Button(sideFrame, text="View Schedule", command=self.showScheduleWindow)
         scheduleButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
 
@@ -159,6 +164,10 @@ class Main:
         self.scheduleTable.bind('<<TreeviewSelect>>', self.eventScheduleSelectedItem)
         self.scheduleTable.selection_set(0)
         self.scheduleTable.pack()
+
+    def showEditPlantListWindow(self):
+        return
+
     # endregion
 
     # region Save and Load
