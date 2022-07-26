@@ -16,6 +16,12 @@ def getAvailableCrops():
 
     return availableCrops
 
+def getAvailableCropDetail(crop):
+    with open("plants.json", "r") as f:
+        cropsList = json.loads(f.read())
+
+    return cropsList[crop.lower()]
+
 
 class Plot:
     def __init__(self, x, y, root):
@@ -73,6 +79,11 @@ class Plot:
             return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.percentGrown}%)"
 
     def showEditPlotWindow(self):
+        def refresh(args):
+            current = getAvailableCropDetail(cropListbox.get(cropListbox.curselection()))
+            variety.set("Variety: " + str(current["variety"]))
+            noPerSquareFoot.set("Number Per Square Foot: " + str(current["numberPerSquareFoot"]))
+
         if self.plotWindow is not None:
             return
 
@@ -82,13 +93,16 @@ class Plot:
 
         availableCrops = getAvailableCrops()
 
-        selected = StringVar(self.plotWindow)
-        selected.set(availableCrops[0])
+        noPerSquareFoot = StringVar(self.plotWindow)
+
+        variety = StringVar(self.plotWindow)
 
         # Listbox Section
         listFrame = LabelFrame(self.plotWindow, text="Select Plant")
 
         cropListbox = Listbox(listFrame, height=6)
+        cropListbox.bind("<<ListboxSelect>>", refresh)
+
         for x in availableCrops:
             cropListbox.insert(END, x)
         cropListbox.pack(side=LEFT, fill="y", padx=2, pady=(0, 5))
@@ -96,6 +110,8 @@ class Plot:
             cropListbox.select_set(self.plant.id)
         else:
             cropListbox.select_set(0)
+
+        refresh(None)
 
         scrollbar = Scrollbar(listFrame, orient="vertical")
         scrollbar.config(command=cropListbox.yview)
@@ -114,9 +130,20 @@ class Plot:
         if self.plant is not None:
             plantingDateSelector.set_date(self.plant.plantingDate)
 
-        plantingDateSelector.grid(column=1, row=0, padx=2, pady=(2, 0))
+        plantingDateSelector.grid(column=1, row=0, padx=2, pady=(2, 2))
 
         plantSettingFrame.pack(pady=(5, 0), padx=(0, 5), expand=TRUE, fill="both")
+
+        # Plant Info Section
+        plantInfoFrame = LabelFrame(self.plotWindow, text="Plant Information")
+
+        # Number Per Square Foot
+        Label(plantInfoFrame, textvariable=noPerSquareFoot).grid(column=1, row=0, sticky=W)
+
+        # Variety
+        Label(plantInfoFrame, textvariable=variety).grid(column=1, row=1, sticky=W)
+
+        plantInfoFrame.pack(pady=(5, 0), padx=(0, 5), expand=TRUE, fill="both")
 
         selectCropButton = Button(self.plotWindow, text="Add Crop To Plot",
                                   command=lambda: self.cropSelected(cropListbox, plantingDateSelector.get_date()))

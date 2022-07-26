@@ -242,7 +242,7 @@ class Main:
                         (tileWidth + (plot.x * tileWidth))+(outlineWidth/2),
                         (tileWidth + (plot.y * tileWidth))+(outlineWidth/2),
                         (tileWidth + (plot.x * tileWidth) + tileWidth)-(outlineWidth/2),
-                         (tileWidth + (plot.y * tileWidth) + tileWidth)-(outlineWidth/2),
+                        (tileWidth + (plot.y * tileWidth) + tileWidth)-(outlineWidth/2),
                         fill="",
                         outline=cSelected,
                         width=outlineWidth
