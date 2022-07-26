@@ -81,8 +81,10 @@ class Plot:
     def showEditPlotWindow(self):
         def refresh(args):
             current = getAvailableCropDetail(cropListbox.get(cropListbox.curselection()))
+            name.set("Name: " + str(current["name"]))
             variety.set("Variety: " + str(current["variety"]))
             noPerSquareFoot.set("Number Per Square Foot: " + str(current["numberPerSquareFoot"]))
+            growTime.set("Growth Period (Days): " + str(current["growTime"]))
 
         if self.plotWindow is not None:
             return
@@ -94,8 +96,9 @@ class Plot:
         availableCrops = getAvailableCrops()
 
         noPerSquareFoot = StringVar(self.plotWindow)
-
         variety = StringVar(self.plotWindow)
+        name = StringVar(self.plotWindow)
+        growTime = StringVar(self.plotWindow)
 
         # Listbox Section
         listFrame = LabelFrame(self.plotWindow, text="Select Plant")
@@ -137,11 +140,14 @@ class Plot:
         # Plant Info Section
         plantInfoFrame = LabelFrame(self.plotWindow, text="Plant Information")
 
+        # Name
+        Label(plantInfoFrame, textvariable=name).grid(column=0, row=0, sticky=W)
         # Number Per Square Foot
-        Label(plantInfoFrame, textvariable=noPerSquareFoot).grid(column=1, row=0, sticky=W)
-
+        Label(plantInfoFrame, textvariable=noPerSquareFoot).grid(column=0, row=1, sticky=W)
         # Variety
-        Label(plantInfoFrame, textvariable=variety).grid(column=1, row=1, sticky=W)
+        Label(plantInfoFrame, textvariable=variety).grid(column=0, row=2, sticky=W)
+        # Grow Time
+        Label(plantInfoFrame, textvariable=growTime).grid(column=0, row=3, sticky=W)
 
         plantInfoFrame.pack(pady=(5, 0), padx=(0, 5), expand=TRUE, fill="both")
 

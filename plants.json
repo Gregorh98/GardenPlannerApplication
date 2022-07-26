@@ -5,6 +5,12 @@
     "numberPerSquareFoot": 1,
     "growTime": 70
   },
+    "broccoli2": {
+    "name": "Broccoli",
+    "variety": "Marathon F1",
+    "numberPerSquareFoot": 1,
+    "growTime": 70
+  },
     "potato": {
     "name": "Potato",
     "variety": "Marris Piper",
@@ -54,7 +60,7 @@
     "growTime": 30
   },
   "spring onion": {
-    "name": "Spring\nOnion",
+    "name": "Spring Onion",
     "variety": "Ramrod",
     "numberPerSquareFoot": 16,
     "growTime": 50
