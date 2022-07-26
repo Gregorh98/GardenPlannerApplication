@@ -16,9 +16,8 @@ class Main:
         self.root.title(title)
         self.height = 2
         self.width = 3
-        self.tileWidth = 64  # The dimensions of the representation of one square foot of land
-        self.canvasWidth = lambda:  (2 * self.tileWidth) + (self.tileWidth * self.width)
-        self.canvasHeight = lambda: (2 * self.tileWidth) + (self.tileWidth * self.height)
+        self.canvasWidth = lambda:  (2 * tileWidth) + (tileWidth * self.width)
+        self.canvasHeight = lambda: (2 * tileWidth) + (tileWidth * self.height)
 
         self.highlightSquare        = None
         self.configurationWindow    = None
@@ -35,8 +34,8 @@ class Main:
 
     # region Windows
     def initialiseMainWindow(self):
-        self.c = Canvas(self.root, height=((2 * self.tileWidth) + self.height * self.tileWidth),
-                        width=((2 * self.tileWidth) + self.width * self.tileWidth))
+        self.c = Canvas(self.root, height=((2 * tileWidth) + self.height * tileWidth),
+                        width=((2 * tileWidth) + self.width * tileWidth))
 
         self.c.grid(row=0, column=0)
 
@@ -224,7 +223,7 @@ class Main:
                     # Update plant in plot
                     plotPlant = jsonDump[f"[{plot.x}, {plot.y}]"]["plant"]
                     if plotPlant is not None:
-                        self.gardenMap[plot.y][plot.x].plant = Plant(plotPlant["name"], plotPlant["id"], datetime.date.fromisoformat(plotPlant["plantingDate"]), self.tileWidth)
+                        self.gardenMap[plot.y][plot.x].plant = Plant(plotPlant["name"], plotPlant["id"], datetime.date.fromisoformat(plotPlant["plantingDate"]))
                         self.gardenMap[plot.y][plot.x].update()
     # endregion
 
@@ -240,10 +239,10 @@ class Main:
                         self.c.delete(self.highlightSquare)
                     outlineWidth = 4
                     self.highlightSquare = self.c.create_rectangle(
-                        (self.tileWidth + (plot.x * self.tileWidth))+(outlineWidth/2),
-                        (self.tileWidth + (plot.y * self.tileWidth))+(outlineWidth/2),
-                        (self.tileWidth + (plot.x * self.tileWidth) + self.tileWidth)-(outlineWidth/2),
-                         (self.tileWidth + (plot.y * self.tileWidth) + self.tileWidth)-(outlineWidth/2),
+                        (tileWidth + (plot.x * tileWidth))+(outlineWidth/2),
+                        (tileWidth + (plot.y * tileWidth))+(outlineWidth/2),
+                        (tileWidth + (plot.x * tileWidth) + tileWidth)-(outlineWidth/2),
+                         (tileWidth + (plot.y * tileWidth) + tileWidth)-(outlineWidth/2),
                         fill="",
                         outline=cSelected,
                         width=outlineWidth
@@ -264,7 +263,7 @@ class Main:
         for y in range(self.height):
             self.gardenMap.append([])
             for x in range(self.width):
-                newPlot = Plot(x, y, self.root, self.tileWidth)
+                newPlot = Plot(x, y, self.root)
                 newPlot.draw(self.c)
                 self.gardenMap[y].append(newPlot)
 
@@ -304,14 +303,14 @@ class Main:
         else:
             self.c.configure(background=cGrass)
 
-        self.c.create_rectangle(self.tileWidth - (self.tileWidth / 8), self.tileWidth - (self.tileWidth / 8),
-                                (self.tileWidth * self.width) + self.tileWidth + (self.tileWidth / 8),
-                                (self.tileWidth * self.height) + self.tileWidth + (self.tileWidth / 8), fill=cWood)
+        self.c.create_rectangle(tileWidth - (tileWidth / 8), tileWidth - (tileWidth / 8),
+                                (tileWidth * self.width) + tileWidth + (tileWidth / 8),
+                                (tileWidth * self.height) + tileWidth + (tileWidth / 8), fill=cWood)
 
         self.generateGardenMap()
 
-        self.c.configure(height=((2 * self.tileWidth) + self.height * self.tileWidth),
-                         width=((2 * self.tileWidth) + self.width * self.tileWidth))
+        self.c.configure(height=((2 * tileWidth) + self.height * tileWidth),
+                         width=((2 * tileWidth) + self.width * tileWidth))
 
         if self.configurationWindow is not None:
             self.configurationWindow.destroy()

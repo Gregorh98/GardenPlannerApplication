@@ -1,5 +1,6 @@
 # Variables
-versionNumber   = "1.0.0"
+versionNumber   = "1.2.0"
+tileWidth       = 64            #Scale of view - min 64
 
 # Resources
 cWood       = "#bca464"

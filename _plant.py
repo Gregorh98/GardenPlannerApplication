@@ -1,10 +1,11 @@
 import math
 import datetime
 import json
+from _resources import tileWidth
 
 
 class Plant:
-    def __init__(self, name, _id, plantingDate, tileWidth):
+    def __init__(self, name, _id, plantingDate):
         self.growthStates    = {"planned":  "Planned",
                                 "growing":  "Growing",
                                 "ready":    "Ready"}

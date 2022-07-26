@@ -18,16 +18,14 @@ def getAvailableCrops():
 
 
 class Plot:
-    def __init__(self, x, y, root, tileWidth):
+    def __init__(self, x, y, root):
         self.x = x
         self.y = y
         self.xOnGrid = tileWidth + (x * tileWidth)
         self.yOnGrid = tileWidth + (y * tileWidth)
 
-        self.tileWidth = tileWidth
-
-        self.xCenterCell = self.xOnGrid + (self.tileWidth / 2)
-        self.yCenterCell = self.yOnGrid + (self.tileWidth / 2)
+        self.xCenterCell = self.xOnGrid + (tileWidth / 2)
+        self.yCenterCell = self.yOnGrid + (tileWidth / 2)
 
         self.id = str([x, y])
 
@@ -43,10 +41,10 @@ class Plot:
             self.canvasImage = PhotoImage(file='sprites/plot/plot0.png')
             self.canvasElement = self.canvas.create_image(self.xOnGrid, self.yOnGrid, image=self.canvasImage, anchor=NW)
         else:
-            self.canvasElement = canvas.create_rectangle(self.tileWidth + self.x * self.tileWidth,
-                                                         self.tileWidth + self.y * self.tileWidth,
-                                                         self.tileWidth + self.x * self.tileWidth + self.tileWidth,
-                                                         self.tileWidth + self.y * self.tileWidth + self.tileWidth,
+            self.canvasElement = canvas.create_rectangle(tileWidth + self.x * tileWidth,
+                                                         tileWidth + self.y * tileWidth,
+                                                         tileWidth + self.x * tileWidth + tileWidth,
+                                                         tileWidth + self.y * tileWidth + tileWidth,
                                                          fill=cLightMud,
                                                          outline=cMidMud)
 
@@ -69,8 +67,7 @@ class Plot:
             self.canvas.itemconfig(self.canvasElement, fill=cLightMud, outline=cMidMud)
 
     def getNewPlotText(self):
-        if self.plant.state == self.plant.growthStates["planned"] or self.plant.state == self.plant.growthStates[
-            "ready"]:
+        if self.plant.state == self.plant.growthStates["planned"] or self.plant.state == self.plant.growthStates["ready"]:
             return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.state})"
         else:
             return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.percentGrown}%)"
@@ -168,3 +165,4 @@ class Plot:
             else:
                 self.plotText = self.canvas.create_text(self.xCenterCell, self.yCenterCell, fill="white",
                                                         text=self.getNewPlotText(), justify=CENTER)
+                self.canvas.tag_bind(self.plotText, "<Button-3>", self.eventRemoveCrop)
