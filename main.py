@@ -21,6 +21,7 @@ class Main:
 
         self.highlightSquare        = None
         self.configurationWindow    = None
+        self.editPlantListWindow    = None
         self.scheduleWindow         = None
 
         self.gardenMap = []
@@ -60,11 +61,6 @@ class Main:
 
         row += 1
 
-        editPlantListButton = Button(sideFrame, text="Edit Plant List", command=self.showEditPlantListWindow, state=DISABLED)
-        editPlantListButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
-
-        row += 1
-
         scheduleButton = Button(sideFrame, text="View Schedule", command=self.showScheduleWindow)
         scheduleButton.grid(row=row, column=0, padx=2, pady=1, sticky=EW)
 
@@ -87,7 +83,6 @@ class Main:
 
         self.updateGarden(self.height, self.width)
 
-
     def showConfigureWindow(self):
         if self.configurationWindow is not None:
             return
@@ -95,19 +90,32 @@ class Main:
         self.configurationWindow = Toplevel(self.root)
         self.configurationWindow.protocol("WM_DELETE_WINDOW", self.configClosed)
 
-        Label(self.configurationWindow, text="Width").grid(row=0, column=0, sticky=W)
-        self.widthEntryBox = Entry(self.configurationWindow)
+        #Dimensions
+        dimensionsFrame = LabelFrame(self.configurationWindow, text="Garden Dimensions")
+
+        Label(dimensionsFrame, text="Width").grid(row=0, column=0, sticky=W)
+        self.widthEntryBox = Entry(dimensionsFrame, width=10)
         self.widthEntryBox.insert(0, str(self.width))
-        self.widthEntryBox.grid(row=0, column=1)
+        self.widthEntryBox.grid(row=0, column=1, padx=2)
 
         self.widthEntryBox.focus_set()
 
-        Label(self.configurationWindow, text="Height").grid(row=1, column=0, sticky=W)
-        self.heightEntryBox = Entry(self.configurationWindow)
+        Label(dimensionsFrame, text="Height").grid(row=1, column=0, sticky=W)
+        self.heightEntryBox = Entry(dimensionsFrame, width=10)
         self.heightEntryBox.insert(0, str(self.height))
-        self.heightEntryBox.grid(row=1, column=1)
+        self.heightEntryBox.grid(row=1, column=1, padx=2)
 
-        Button(self.configurationWindow, text="Map My Garden", command=lambda: self.updateGarden(int(self.heightEntryBox.get()), int(self.widthEntryBox.get()))).grid(row=2, column=0, columnspan=2)
+        Button(dimensionsFrame, text="Apply", command=lambda: self.updateGarden(int(self.heightEntryBox.get()), int(self.widthEntryBox.get()))).grid(row=2, column=0, columnspan=2, pady=2, padx=2, sticky=EW)
+
+        dimensionsFrame.grid(column=0, row=0, padx=2, pady=2)
+
+        #Editing Plant List
+        optionsFrame = LabelFrame(self.configurationWindow, text="Data")
+
+        editPlantListButton = Button(optionsFrame, text="Edit Plant List", command=self.showEditPlantListWindow)
+        editPlantListButton.grid(row=0, column=1, padx=2, pady=1, sticky=EW)
+
+        optionsFrame.grid(row=0, column=2, padx=2, pady=2, sticky=NS)
 
     def showScheduleWindow(self):
         if self.scheduleWindow is not None:
@@ -166,7 +174,17 @@ class Main:
         self.scheduleTable.pack()
 
     def showEditPlantListWindow(self):
-        return
+        if self.editPlantListWindow is not None:
+            return
+
+        self.editPlantListWindow = Toplevel(self.root)
+
+        Listbox(self.editPlantListWindow).grid(column=0, row=0)
+
+
+
+
+
 
     # endregion
 

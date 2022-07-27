@@ -81,7 +81,7 @@ class Plot:
     def showEditPlotWindow(self):
         def refresh(args):
             current = getAvailableCropDetail(cropListbox.get(cropListbox.curselection()))
-            name.set("Name: " + str(current["name"]))
+            name.set("Display Name: " + str(current["name"]))
             variety.set("Variety: " + str(current["variety"]))
             noPerSquareFoot.set("Number Per Square Foot: " + str(current["numberPerSquareFoot"]))
             growTime.set("Growth Period (Days): " + str(current["growTime"]))
