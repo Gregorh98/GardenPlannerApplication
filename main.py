@@ -200,6 +200,7 @@ class Main:
             return
 
         self.editPlantListWindow = Toplevel(self.root)
+        self.editPlantListWindow.protocol("WM_DELETE_WINDOW", self.editPlantListClosed)
 
         id = StringVar(self.editPlantListWindow)
         noPerSquareFoot = StringVar(self.editPlantListWindow)
@@ -378,6 +379,10 @@ class Main:
     def configClosed(self):
         self.configurationWindow.destroy()
         self.configurationWindow = None
+
+    def editPlantListClosed(self):
+        self.editPlantListWindow.destroy()
+        self.editPlantListWindow = None
 
     def generateGardenMap(self):
         for y in range(self.height):
