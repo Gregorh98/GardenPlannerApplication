@@ -174,17 +174,71 @@ class Main:
         self.scheduleTable.pack()
 
     def showEditPlantListWindow(self):
+        def refresh(args):
+            current = getAvailableCropDetail(cropListbox.get(cropListbox.curselection()))
+            name.set(str(current["name"]))
+            variety.set(str(current["variety"]))
+            noPerSquareFoot.set(str(current["numberPerSquareFoot"]))
+            growTime.set(str(current["growTime"]))
+
         if self.editPlantListWindow is not None:
             return
 
         self.editPlantListWindow = Toplevel(self.root)
 
-        Listbox(self.editPlantListWindow).grid(column=0, row=0)
+        noPerSquareFoot = StringVar(self.editPlantListWindow)
+        variety = StringVar(self.editPlantListWindow)
+        name = StringVar(self.editPlantListWindow)
+        growTime = StringVar(self.editPlantListWindow)
 
+        availableCrops = getAvailableCrops()
 
+        # Listbox Section
+        listFrame = LabelFrame(self.editPlantListWindow, text="Select Plant")
 
+        cropListbox = Listbox(listFrame, height=6)
+        cropListbox.bind("<<ListboxSelect>>", refresh)
 
+        for x in availableCrops:
+            cropListbox.insert(END, x)
+        cropListbox.pack(side=LEFT, fill="y", padx=2, pady=(0, 5))
+        cropListbox.select_set(0)
 
+        refresh(None)
+
+        scrollbar = Scrollbar(listFrame, orient="vertical")
+        scrollbar.config(command=cropListbox.yview)
+        scrollbar.pack(side="right", fill="y", pady=(0, 5))
+
+        cropListbox.config(yscrollcommand=scrollbar.set)
+
+        listFrame.pack(pady=5, padx=5, expand=TRUE, side=LEFT, fill="both")
+
+        # Plant Configuration Section
+        plantConfigFrame = LabelFrame(self.editPlantListWindow, text="Plant Information")
+
+        # Name
+        Label(plantConfigFrame, text="Display Name").grid(column=0, row=0, sticky=W, padx=2)
+        Entry(plantConfigFrame, textvariable=name).grid(column=1, row=0, sticky=W, padx=2)
+        # Number Per Square Foot
+        Label(plantConfigFrame, text="Number Per Square Foot").grid(column=0, row=1, sticky=W, padx=2)
+        Entry(plantConfigFrame, textvariable=noPerSquareFoot).grid(column=1, row=1, sticky=W, padx=2)
+        # Variety
+        Label(plantConfigFrame, text="Variety").grid(column=0, row=2, sticky=W, padx=2)
+        Entry(plantConfigFrame, textvariable=variety).grid(column=1, row=2, sticky=W, padx=2)
+        # Grow Time
+        Label(plantConfigFrame, text="Grow Time").grid(column=0, row=3, sticky=W, padx=2)
+        Entry(plantConfigFrame, textvariable=growTime).grid(column=1, row=3, sticky=W, padx=2)
+
+        buttonFrame = Frame(plantConfigFrame)
+
+        Button(buttonFrame, text="Add", command=None).grid(column=0, row=0, sticky=W, padx=2)
+        Button(buttonFrame, text="Apply Edit", command=None).grid(column=1, row=0, sticky=W, padx=2)
+        Button(buttonFrame, text="Remove", command=None).grid(column=2, row=0, sticky=W, padx=2)
+
+        buttonFrame.grid(row=4, column=0, columnspan=2, pady=2)
+
+        plantConfigFrame.pack(pady=(5, 0), padx=(0, 5), expand=TRUE, fill="both")
 
     # endregion
 
@@ -348,6 +402,18 @@ class Main:
         while True:
             self.root.update()
             self.root.update_idletasks()
+
+    """ Section not in use - need to work out how this will work as dict requires unique keys
+    def addPlantToPlantsFile(self, plantToAdd):
+        return
+
+    def editPlantInPlantsFile(self, plantToEdit):
+        return
+
+    def removePlantInPlantsFile(self, plantToRemove):
+        return
+    """
+
     # endregion
 
 

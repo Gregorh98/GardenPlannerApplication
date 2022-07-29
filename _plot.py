@@ -1,27 +1,9 @@
 import _tkinter
-import json
 from tkcalendar import DateEntry
 from _resources import *
 from _plant import Plant
 from tkinter import *
 import tkinter.messagebox
-
-
-def getAvailableCrops():
-    with open("plants.json", "r") as f:
-        cropsList = json.loads(f.read())
-        availableCrops = []
-        for key in cropsList.keys():
-            availableCrops.append(key.title())
-
-    return availableCrops
-
-def getAvailableCropDetail(crop):
-    with open("plants.json", "r") as f:
-        cropsList = json.loads(f.read())
-
-    return cropsList[crop.lower()]
-
 
 class Plot:
     def __init__(self, x, y, root):

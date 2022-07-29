@@ -20,3 +20,23 @@ titleVersionNumber  = f"{title} v{versionNumber}"
 
 # Settings
 graphicalUI = False
+
+# Global static methods
+import json
+
+def getAvailableCrops():
+    with open("plants.json", "r") as f:
+        cropsList = json.loads(f.read())
+        availableCrops = []
+        for key in cropsList.keys():
+            availableCrops.append(key.title())
+
+    return availableCrops
+
+
+def getAvailableCropDetail(crop):
+    with open("plants.json", "r") as f:
+        cropsList = json.loads(f.read())
+
+    return cropsList[crop.lower()]
+
