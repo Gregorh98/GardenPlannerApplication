@@ -174,21 +174,26 @@ class Main:
         self.scheduleTable.pack()
 
     def showEditPlantListWindow(self):
-        def refresh(args):
-            current = getAvailableCropDetail(cropListbox.get(cropListbox.curselection()))
-            id.set(str(cropListbox.get(cropListbox.curselection())))
-            name.set(str(current["name"]))
-            variety.set(str(current["variety"]))
-            noPerSquareFoot.set(str(current["numberPerSquareFoot"]))
-            growTime.set(str(current["growTime"]))
+        def refresh(args, regenBlankEntries=False):
+            if not regenBlankEntries:
+                current = getAvailableCropDetail(cropListbox.get(cropListbox.curselection()))
+                id.set(str(cropListbox.get(cropListbox.curselection())))
+                name.set(str(current["name"]))
+                variety.set(str(current["variety"]))
+                noPerSquareFoot.set(str(current["numberPerSquareFoot"]))
+                growTime.set(str(current["growTime"]))
+            else:
+                id.set("")
+                name.set("")
+                variety.set("")
+                noPerSquareFoot.set("")
+                growTime.set("")
 
         def regenListbox():
             availableCrops = getAvailableCrops()
             cropListbox.delete(0, END)
             for x in availableCrops:
                 cropListbox.insert(END, x)
-            cropListbox.select_set(0)
-            refresh(None)
 
 
         if self.editPlantListWindow is not None:
@@ -213,9 +218,6 @@ class Main:
         for x in availableCrops:
             cropListbox.insert(END, x)
         cropListbox.pack(side=LEFT, fill="y", padx=2, pady=(0, 5))
-        cropListbox.select_set(0)
-
-        refresh(None)
 
         scrollbar = Scrollbar(listFrame, orient="vertical")
         scrollbar.config(command=cropListbox.yview)
@@ -257,14 +259,17 @@ class Main:
         def add():
             self.addPlantToPlantsFile(getEntryData())
             regenListbox()
+            refresh(None, True)
 
         def edit():
             self.editPlantInPlantsFile(getEntryData())
             regenListbox()
+            refresh(None, True)
 
         def remove():
             self.removePlantInPlantsFile(getEntryData())
             regenListbox()
+            refresh(None, True)
 
         Button(buttonFrame, text="Add", command=add).grid(column=0, row=0, sticky=W, padx=2)
         Button(buttonFrame, text="Apply Edit", command=edit).grid(column=1, row=0, sticky=W, padx=2)
@@ -442,7 +447,7 @@ class Main:
             jsonDump = json.loads(f.read())
 
         if plantToAdd["id"] not in jsonDump:
-            jsonDump.push(plantToAdd)
+            jsonDump[plantToAdd["id"]] = {"name": plantToAdd["name"], "variety": plantToAdd["variety"], "numberPerSquareFoot": plantToAdd["numberPerSquareFoot"], "growTime": plantToAdd["growTime"]}
 
             jsonDump = json.dumps(jsonDump, default=str)
 
