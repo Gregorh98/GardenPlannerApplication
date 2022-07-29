@@ -13,6 +13,7 @@ cSelected   = "#3C3A7A"
 # Paths
 saveExportPath      = "garden.json"
 imageExportPath     = "garden.png"
+plantsJsonFile      = "plants.json"
 
 # Labels
 title               = f"Square Foot Garden Planner"

@@ -176,16 +176,27 @@ class Main:
     def showEditPlantListWindow(self):
         def refresh(args):
             current = getAvailableCropDetail(cropListbox.get(cropListbox.curselection()))
+            id.set(str(cropListbox.get(cropListbox.curselection())))
             name.set(str(current["name"]))
             variety.set(str(current["variety"]))
             noPerSquareFoot.set(str(current["numberPerSquareFoot"]))
             growTime.set(str(current["growTime"]))
+
+        def regenListbox():
+            availableCrops = getAvailableCrops()
+            cropListbox.delete(0, END)
+            for x in availableCrops:
+                cropListbox.insert(END, x)
+            cropListbox.select_set(0)
+            refresh(None)
+
 
         if self.editPlantListWindow is not None:
             return
 
         self.editPlantListWindow = Toplevel(self.root)
 
+        id = StringVar(self.editPlantListWindow)
         noPerSquareFoot = StringVar(self.editPlantListWindow)
         variety = StringVar(self.editPlantListWindow)
         name = StringVar(self.editPlantListWindow)
@@ -217,26 +228,49 @@ class Main:
         # Plant Configuration Section
         plantConfigFrame = LabelFrame(self.editPlantListWindow, text="Plant Information")
 
+        row=0
+        # Id
+        Label(plantConfigFrame, text="ID Name").grid(column=0, row=row, sticky=W, padx=2)
+        Entry(plantConfigFrame, textvariable=id).grid(column=1, row=row, sticky=W, padx=2)
+        row += 1
         # Name
-        Label(plantConfigFrame, text="Display Name").grid(column=0, row=0, sticky=W, padx=2)
-        Entry(plantConfigFrame, textvariable=name).grid(column=1, row=0, sticky=W, padx=2)
+        Label(plantConfigFrame, text="Display Name").grid(column=0, row=row, sticky=W, padx=2)
+        Entry(plantConfigFrame, textvariable=name).grid(column=1, row=row, sticky=W, padx=2)
+        row += 1
         # Number Per Square Foot
-        Label(plantConfigFrame, text="Number Per Square Foot").grid(column=0, row=1, sticky=W, padx=2)
-        Entry(plantConfigFrame, textvariable=noPerSquareFoot).grid(column=1, row=1, sticky=W, padx=2)
+        Label(plantConfigFrame, text="Number Per Square Foot").grid(column=0, row=row, sticky=W, padx=2)
+        Entry(plantConfigFrame, textvariable=noPerSquareFoot).grid(column=1, row=row, sticky=W, padx=2)
+        row += 1
         # Variety
-        Label(plantConfigFrame, text="Variety").grid(column=0, row=2, sticky=W, padx=2)
-        Entry(plantConfigFrame, textvariable=variety).grid(column=1, row=2, sticky=W, padx=2)
+        Label(plantConfigFrame, text="Variety").grid(column=0, row=row, sticky=W, padx=2)
+        Entry(plantConfigFrame, textvariable=variety).grid(column=1, row=row, sticky=W, padx=2)
+        row += 1
         # Grow Time
-        Label(plantConfigFrame, text="Grow Time").grid(column=0, row=3, sticky=W, padx=2)
-        Entry(plantConfigFrame, textvariable=growTime).grid(column=1, row=3, sticky=W, padx=2)
+        Label(plantConfigFrame, text="Grow Time").grid(column=0, row=row, sticky=W, padx=2)
+        Entry(plantConfigFrame, textvariable=growTime).grid(column=1, row=row, sticky=W, padx=2)
+        row += 1
 
         buttonFrame = Frame(plantConfigFrame)
 
-        Button(buttonFrame, text="Add", command=None).grid(column=0, row=0, sticky=W, padx=2)
-        Button(buttonFrame, text="Apply Edit", command=None).grid(column=1, row=0, sticky=W, padx=2)
-        Button(buttonFrame, text="Remove", command=None).grid(column=2, row=0, sticky=W, padx=2)
+        def getEntryData(): return {"id": str(id.get().lower()), "name": str(name.get()), "variety": str(variety.get()), "numberPerSquareFoot": float(noPerSquareFoot.get()), "growTime": int(growTime.get())}
 
-        buttonFrame.grid(row=4, column=0, columnspan=2, pady=2)
+        def add():
+            self.addPlantToPlantsFile(getEntryData())
+            regenListbox()
+
+        def edit():
+            self.editPlantInPlantsFile(getEntryData())
+            regenListbox()
+
+        def remove():
+            self.removePlantInPlantsFile(getEntryData())
+            regenListbox()
+
+        Button(buttonFrame, text="Add", command=add).grid(column=0, row=0, sticky=W, padx=2)
+        Button(buttonFrame, text="Apply Edit", command=edit).grid(column=1, row=0, sticky=W, padx=2)
+        Button(buttonFrame, text="Remove", command=remove).grid(column=2, row=0, sticky=W, padx=2)
+
+        buttonFrame.grid(row=row, column=0, columnspan=2, pady=2)
 
         plantConfigFrame.pack(pady=(5, 0), padx=(0, 5), expand=TRUE, fill="both")
 
@@ -403,16 +437,47 @@ class Main:
             self.root.update()
             self.root.update_idletasks()
 
-    """ Section not in use - need to work out how this will work as dict requires unique keys
     def addPlantToPlantsFile(self, plantToAdd):
-        return
+        with open(plantsJsonFile, "r") as f:
+            jsonDump = json.loads(f.read())
 
-    def editPlantInPlantsFile(self, plantToEdit):
-        return
+        if plantToAdd["id"] not in jsonDump:
+            jsonDump.push(plantToAdd)
+
+            jsonDump = json.dumps(jsonDump, default=str)
+
+            with open(plantsJsonFile, "w") as f:
+                f.write(jsonDump)
+        else:
+            tkinter.messagebox.showerror("Error", "Plant already exists! Please change the ID name")
 
     def removePlantInPlantsFile(self, plantToRemove):
-        return
-    """
+        with open(plantsJsonFile, "r") as f:
+            jsonDump = json.loads(f.read())
+
+        if plantToRemove["id"] in jsonDump:
+            jsonDump.pop(plantToRemove["id"])
+
+            jsonDump = json.dumps(jsonDump, default=str)
+
+            with open(plantsJsonFile, "w") as f:
+                f.write(str(jsonDump))
+        else:
+            tkinter.messagebox.showerror("Error", "Plant does not exist! Select another plant")
+
+    def editPlantInPlantsFile(self, plantToEdit):
+        with open(plantsJsonFile, "r") as f:
+            jsonDump = json.loads(f.read())
+
+        if plantToEdit["id"] in jsonDump:
+            jsonDump[plantToEdit["id"]] = {"name": plantToEdit["name"], "variety": plantToEdit["variety"], "numberPerSquareFoot": plantToEdit["numberPerSquareFoot"], "growTime": plantToEdit["growTime"]}
+
+            jsonDump = json.dumps(jsonDump, default=str)
+
+            with open(plantsJsonFile, "w") as f:
+                f.write(str(jsonDump))
+        else:
+            tkinter.messagebox.showerror("Error", "Plant does not exist! Select another plant")
 
     # endregion
 
