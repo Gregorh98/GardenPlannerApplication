@@ -1,5 +1,4 @@
 import datetime
-import json
 import tkinter.messagebox
 from tkinter import ttk
 from tkinter import *
@@ -174,14 +173,20 @@ class Main:
         self.scheduleTable.pack()
 
     def showEditPlantListWindow(self):
+        self.configClosed()
+
         def refresh(args, regenBlankEntries=False):
             if not regenBlankEntries:
-                current = getAvailableCropDetail(cropListbox.get(cropListbox.curselection()))
-                id.set(str(cropListbox.get(cropListbox.curselection())))
-                name.set(str(current["name"]))
-                variety.set(str(current["variety"]))
-                noPerSquareFoot.set(str(current["numberPerSquareFoot"]))
-                growTime.set(str(current["growTime"]))
+                try:
+                    current = getAvailableCropDetail(cropListbox.get(cropListbox.curselection()))
+                    id.set(str(cropListbox.get(cropListbox.curselection())))
+                    name.set(str(current["name"]))
+                    variety.set(str(current["variety"]))
+                    noPerSquareFoot.set(str(current["numberPerSquareFoot"]))
+                    growTime.set(str(current["growTime"]))
+                except TclError:
+                    return
+
             else:
                 id.set("")
                 name.set("")
@@ -194,7 +199,6 @@ class Main:
             cropListbox.delete(0, END)
             for x in availableCrops:
                 cropListbox.insert(END, x)
-
 
         if self.editPlantListWindow is not None:
             return
@@ -234,7 +238,8 @@ class Main:
         row=0
         # Id
         Label(plantConfigFrame, text="ID Name").grid(column=0, row=row, sticky=W, padx=2)
-        Entry(plantConfigFrame, textvariable=id).grid(column=1, row=row, sticky=W, padx=2)
+        plantIdEntry = Entry(plantConfigFrame, textvariable=id, state=DISABLED)
+        plantIdEntry.grid(column=1, row=row, sticky=W, padx=2)
         row += 1
         # Name
         Label(plantConfigFrame, text="Display Name").grid(column=0, row=row, sticky=W, padx=2)
@@ -255,7 +260,11 @@ class Main:
 
         buttonFrame = Frame(plantConfigFrame)
 
-        def getEntryData(): return {"id": str(id.get().lower()), "name": str(name.get()), "variety": str(variety.get()), "numberPerSquareFoot": float(noPerSquareFoot.get()), "growTime": int(growTime.get())}
+        def getEntryData():
+            if str(id.get()) != "":
+                return {"id": str(id.get().lower()), "name": str(name.get()), "variety": str(variety.get()), "numberPerSquareFoot": float(noPerSquareFoot.get()), "growTime": int(growTime.get())}
+            else:
+                return None
 
         def add():
             self.addPlantToPlantsFile(getEntryData())
@@ -272,7 +281,7 @@ class Main:
             regenListbox()
             refresh(None, True)
 
-        Button(buttonFrame, text="Add", command=add).grid(column=0, row=0, sticky=W, padx=2)
+        Button(buttonFrame, text="Add", command=add, state=DISABLED).grid(column=0, row=0, sticky=W, padx=2)
         Button(buttonFrame, text="Apply Edit", command=edit).grid(column=1, row=0, sticky=W, padx=2)
         Button(buttonFrame, text="Remove", command=remove).grid(column=2, row=0, sticky=W, padx=2)
 
@@ -451,15 +460,18 @@ class Main:
         with open(plantsJsonFile, "r") as f:
             jsonDump = json.loads(f.read())
 
-        if plantToAdd["id"] not in jsonDump:
-            jsonDump[plantToAdd["id"]] = {"name": plantToAdd["name"], "variety": plantToAdd["variety"], "numberPerSquareFoot": plantToAdd["numberPerSquareFoot"], "growTime": plantToAdd["growTime"]}
+        if plantToAdd is not None:
+            if plantToAdd["id"] not in jsonDump:
+                jsonDump[plantToAdd["id"]] = {"name": plantToAdd["name"], "variety": plantToAdd["variety"], "numberPerSquareFoot": plantToAdd["numberPerSquareFoot"], "growTime": plantToAdd["growTime"]}
 
-            jsonDump = json.dumps(jsonDump, default=str)
+                jsonDump = json.dumps(jsonDump, default=str)
 
-            with open(plantsJsonFile, "w") as f:
-                f.write(jsonDump)
+                with open(plantsJsonFile, "w") as f:
+                    f.write(jsonDump)
+            else:
+                tkinter.messagebox.showerror("Error", "Plant already exists! Please change the ID name")
         else:
-            tkinter.messagebox.showerror("Error", "Plant already exists! Please change the ID name")
+            tkinter.messagebox.showerror("Error", "Please select a plant before attempting to add")
 
     def removePlantInPlantsFile(self, plantToRemove):
         with open(plantsJsonFile, "r") as f:
