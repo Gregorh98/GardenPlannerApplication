@@ -16,7 +16,8 @@ class Plant:
         jsonInfo = self.getAdditionalInfo()
         self.quantity = jsonInfo["numberPerSquareFoot"]
         self.growTime = jsonInfo["growTime"]
-        self.displayName = jsonInfo["name"] if ("\n" in jsonInfo["name"] or len(jsonInfo["name"]) <= (tileWidth/8)) else jsonInfo["name"][0:7]+"..."
+        self.formattedDisplayName = jsonInfo["name"] if ("\n" in jsonInfo["name"] or len(jsonInfo["name"]) <= (tileWidth / 8)) else jsonInfo["name"][0:7] + "..."
+        self.displayName = jsonInfo["name"]
 
         self.update()
 

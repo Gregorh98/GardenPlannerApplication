@@ -161,7 +161,7 @@ class Main:
         for id, plot in enumerate(allPlantedPlots):
             self.scheduleTable.insert(parent='', index='end', text='', iid=id, values=(
                 plot.id,                                # Co-ordinates of the plot [x, y]
-                plot.plant.name,                        # Name
+                plot.plant.displayName,                 # Name
                 plot.plant.plantingDate,                # Date planted on
                 plot.plant.harvestDate,                 # Date to harvest on
                 f"{plot.plant.daysSincePlanted} days",  # number of days since planted

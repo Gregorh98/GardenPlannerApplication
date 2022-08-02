@@ -56,9 +56,9 @@ class Plot:
 
     def getNewPlotText(self):
         if self.plant.state == self.plant.growthStates["planned"] or self.plant.state == self.plant.growthStates["ready"]:
-            return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.state})"
+            return f"{self.plant.quantity}x\n{self.plant.formattedDisplayName}\n({self.plant.state})"
         else:
-            return f"{self.plant.quantity}x\n{self.plant.displayName}\n({self.plant.percentGrown}%)"
+            return f"{self.plant.quantity}x\n{self.plant.formattedDisplayName}\n({self.plant.percentGrown}%)"
 
     def showEditPlotWindow(self):
         def refresh(args):
