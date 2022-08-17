@@ -308,7 +308,7 @@ class Main:
 
         if overwriteWarning:
             save = {"general": {
-                "tileWidth": self.tileWidth,
+                "tileWidth": tileWidth,
                 "gardenWidth": self.width,
                 "gardenHeight": self.height
             }}
@@ -378,6 +378,7 @@ class Main:
                         width=outlineWidth
                     )
 
+    # region Closed Event Functions
     def scheduleClosed(self):
         for plot in self.getAllPlantedPlots():
             plot.update()
@@ -392,6 +393,7 @@ class Main:
     def editPlantListClosed(self):
         self.editPlantListWindow.destroy()
         self.editPlantListWindow = None
+    # endregion
 
     def generateGardenMap(self):
         for y in range(self.height):
@@ -456,6 +458,7 @@ class Main:
             self.root.update()
             self.root.update_idletasks()
 
+    # region Change Plants File Functions
     def addPlantToPlantsFile(self, plantToAdd):
         with open(plantsJsonFile, "r") as f:
             jsonDump = json.loads(f.read())
@@ -500,6 +503,7 @@ class Main:
                 f.write(str(jsonDump))
         else:
             tkinter.messagebox.showerror("Error", "Plant does not exist! Select another plant")
+    # endregion
 
     # endregion
 
