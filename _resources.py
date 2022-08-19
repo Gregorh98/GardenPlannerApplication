@@ -1,4 +1,6 @@
 # Variables
+import os
+
 versionNumber   = "1.2.0"
 tileWidth       = 64            #Scale of view - min 64
 
@@ -11,9 +13,9 @@ cDarkMud    = "#2e2018"
 cSelected   = "#3C3A7A"
 
 # Paths
-saveExportPath      = "garden.json"
-imageExportPath     = "garden.png"
-plantsJsonFile      = "plants.json"
+saveExportPath      = (os.getcwd()+"\\garden.json")
+imageExportPath     = (os.getcwd()+"\\garden.png")
+plantsJsonFile      = (os.getcwd()+"\\plants.json")
 
 # Labels
 title               = f"Square Foot Garden Planner"

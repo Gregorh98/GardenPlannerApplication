@@ -1,7 +1,7 @@
 import math
 import datetime
 import json
-from _resources import tileWidth
+from _resources import tileWidth, plantsJsonFile
 
 class Plant:
     def __init__(self, name, _id, plantingDate):
@@ -22,7 +22,7 @@ class Plant:
         self.update()
 
     def getAdditionalInfo(self):
-        with open("plants.json", "r") as f:
+        with open(plantsJsonFile, "r") as f:
             allPlants = json.loads(f.read())
             myPlant = allPlants[self.name.lower()]
             return myPlant
@@ -33,11 +33,25 @@ class Plant:
         self.daysTillHarvest = (self.harvestDate - datetime.date.today()).days
         self.daysSincePlanted = (datetime.date.today() - self.plantingDate).days
 
+        self.setPercentGrown()
+        self.setPlantState()
+
+    def setPercentGrown(self):
         # max percent grown is 100
         percentGrown = math.ceil((self.daysSincePlanted / self.growTime) * 100)
-        self.percentGrown = percentGrown if percentGrown <= 100 else 100
-        self.percentGrown = percentGrown if percentGrown >= 0 else 0
+        if percentGrown > 100:
+            self.percentGrown = 100
+            return
 
+        if percentGrown < 0:
+            self.percentGrown = 0
+            return
+
+        self.percentGrown = percentGrown
+
+
+
+    def setPlantState(self):
         if self.plantingDate <= datetime.date.today() < self.harvestDate:
             self.state = self.growthStates["growing"]
 
